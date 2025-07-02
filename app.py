@@ -1,30 +1,29 @@
 #punto de entrada
-#punto de entrada
-
-import slack
-import os
-from pathlib import Path
-from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-from slackeventsapi import SlackEventAdapter
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import json
+import requests
+
+from handlers.ingreso_handler import procesar_ingreso
 
 app = Flask(__name__)
-slack_event_adapter = SlackEventAdapter(os.environ['SIGNING_SECRET'],'/slack/events', app)
 
-# Configuración del cliente de Slack
-client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
+#DEFINIMOS LAS 2 RUTAS
+#PEOPLEFORCE_API_URL = "http://localhost:5001/mock_peopleforce" aca hay que cambiarlo por la url de la api de PF
+#PEOPLEFORCE_API_TOKEN = "token_falso_para_test"
 
-client.chat_postMessage(channel='#test', text='Hello world!')
-
-@app.route('/slack/events', methods=['POST']) #esto no se que hace, ni si anda
-def slack_events():
-    data = request.get_json()
-    if "challenge" in data:
-        return jsonify({"challenge": data["challenge"]})
-    return "", 200
-
-
+print("Flask arrancó", flush=True)
+@app.route('/agregar_persona', methods=['POST'])
+def agregar_persona():
+    datos = request.json
+    if not datos:
+        return jsonify({"error": "No se recibieron datos JSON"}), 400
+    
+    resultado = procesar_ingreso(datos)
+    
+    return jsonify({"mensaje": "Recibido correctamente", "datos": datos}), 200
+    
+# Iniciar el servidor
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3000, host='0.0.0.0')

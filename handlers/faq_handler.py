@@ -1,1 +1,0 @@
-#busca preguntas frecuentes en la base de datos
