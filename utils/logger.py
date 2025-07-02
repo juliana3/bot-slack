@@ -1,1 +1,0 @@
-#manejo de logs

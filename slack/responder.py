@@ -1,1 +1,0 @@
-#envia mensajes al canal o al usuario
