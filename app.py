@@ -21,7 +21,7 @@ def agregar_persona():
         return jsonify({"error": "No se recibieron datos JSON"}), 400
     
     resultado = procesar_ingreso(datos)
-    
+    print("datos recibidos:", datos, flush=True)
     return jsonify({"mensaje": "Recibido correctamente", "datos": datos}), 200
     
 # Iniciar el servidor
