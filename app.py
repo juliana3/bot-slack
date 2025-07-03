@@ -6,6 +6,7 @@ import json
 import requests
 
 from handlers.ingreso_handler import procesar_ingreso
+from handlers.reproceso_handler import reprocesar_filas
 
 app = Flask(__name__)
 
@@ -23,7 +24,15 @@ def agregar_persona():
     resultado = procesar_ingreso(datos)
     print("datos recibidos:", datos, flush=True)
     return jsonify({"mensaje": "Recibido correctamente", "datos": datos}), 200
-    
+
+
+@app.route('/reprocesar_errores', methods=['POST', 'GET'])
+def reprocesar_errores():
+    resultado = reprocesar_filas()
+    return jsonify(resultado), 200
+
+
+
 # Iniciar el servidor
 if __name__ == '__main__':
     app.run(debug=True, port=3000, host='0.0.0.0')
