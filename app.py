@@ -4,14 +4,22 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 import requests
+import logging 
+
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
 app = Flask(__name__)
 
 #DEFINIMOS LAS 2 RUTAS
-#PEOPLEFORCE_API_URL = "http://localhost:5001/mock_peopleforce" aca hay que cambiarlo por la url de la api de PF
+#esta es la ruta que me genera mockoon
+API_URL = "http://localhost:3000/agregar_persona" #aca hay que cambiarlo por la url de la api de PF
 #PEOPLEFORCE_API_TOKEN = "token_falso_para_test"
 
 print("Flask arrancó", flush=True)
@@ -22,8 +30,10 @@ def agregar_persona():
         return jsonify({"error": "No se recibieron datos JSON"}), 400
     
     resultado = procesar_ingreso(datos)
-    print("datos recibidos:", datos, flush=True)
-    return jsonify({"mensaje": "Recibido correctamente", "datos": datos}), 200
+    return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status":resultado}), 200
+
+
+
 
 
 @app.route('/reprocesar_errores', methods=['POST', 'GET'])
@@ -35,4 +45,4 @@ def reprocesar_errores():
 
 # Iniciar el servidor
 if __name__ == '__main__':
-    app.run(debug=True, port=3000, host='0.0.0.0')
+    app.run(debug=True, port=4000, host='0.0.0.0')

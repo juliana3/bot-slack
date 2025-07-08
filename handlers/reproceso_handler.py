@@ -9,6 +9,7 @@ CLIENT = gspread.authorize(CREDS)
 SHEET  = CLIENT.open("formularioPrototipo").sheet1
 
 
+
 def reprocesar_filas():
     filas = SHEET.get_all_values()
     f_procesadas = 0
@@ -17,7 +18,7 @@ def reprocesar_filas():
     for index, fila in enumerate(filas[1:], start=2):
         estado = fila[-1].strip().lower()
 
-        if estado in ("pendiente", "error",""):
+        if estado in ("error",""):
             datos = {
                 "fila" : index,
                 "nombre" : fila[1],
@@ -26,10 +27,8 @@ def reprocesar_filas():
 
             resultado = procesar_ingreso(datos)
             if resultado.get("status_code") in [200,201]:
-                SHEET.update_cell(index,4,"Procesado") # el index es la fila y el 4 representa la columna "Estado"
                 f_procesadas += 1
             else:
-                SHEET.update_cell(index,4,"Error")
                 f_errores += 1
 
             time.sleep(1)  # pausa mínima para no saturar PeopleForce
