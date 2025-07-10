@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 #DEFINIMOS LAS 2 RUTAS
 #esta es la ruta que me genera mockoon
-API_URL = "http://localhost:3000/agregar_persona" #aca hay que cambiarlo por la url de la api de PF
+API_URL = "http://localhost:3000/agregar_persona" #aca hay que cambiarlo por la url de la api de PF /// esto se cambia por os.getenv("PEOPLE_FORCE_URL")
 #PEOPLEFORCE_API_TOKEN = "token_falso_para_test"
 
 print("Flask arrancó", flush=True)
