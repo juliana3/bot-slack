@@ -1,12 +1,7 @@
 import gspread, os, requests, time
-from oauth2client.service_account import ServiceAccountCredentials
 from handlers.ingreso_handler import procesar_ingreso
+from services.sheets_utils import SHEET
 
-# Configuración de Google Sheets
-SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-CREDS  = ServiceAccountCredentials.from_json_keyfile_name("prototipoform-07973d29cfea.json", SCOPE)
-CLIENT = gspread.authorize(CREDS)
-SHEET  = CLIENT.open("formularioPrototipo").sheet1
 
 
 

@@ -2,20 +2,10 @@ import os
 import requests
 from dotenv import load_dotenv
 import logging
-
-import gspread, os, requests, time
-from oauth2client.service_account import ServiceAccountCredentials
+from services.sheets_utils import SHEET, update_col
 
 
 load_dotenv()
-
-#Configuracion del acceso a Google Sheets
-SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-CREDS  = ServiceAccountCredentials.from_json_keyfile_name("prototipoform-07973d29cfea.json", SCOPE)
-CLIENT = gspread.authorize(CREDS)
-SHEET  = CLIENT.open("formularioPrototipo").sheet1
-COL_ESTADO = 5  # Columna donde se guarda el estado de procesamiento
-
 
 #Definicion de variables
 SLACK_BOT_TOKEN = os.getenv("SLACK_TOKEN")
@@ -77,7 +67,7 @@ def procesar_ingreso(datos):
         response = requests.post(API_URL, headers=headers, json=payload)
         if response.status_code in [200, 201]:
             logging.info("Alta OK – fila %s | response: %s", fila, response.json())
-            SHEET.update_cell(fila, COL_ESTADO, "Procesada")
+            update_col(fila, "Estado","Procesada")
 
             #Notifica a rrhh por slack
             notificar_rrhh(datos["nombre"], datos["email"])
@@ -85,10 +75,10 @@ def procesar_ingreso(datos):
             return {"mensaje": "Alta OK", "status_code": response.status_code}
         else:
             logging.error("Alta ERROR – fila %s | %s", fila, response.text)
-            SHEET.update_cell(fila, COL_ESTADO, "Error")
+            update_col(fila, "Estado", "Error")
             return {"error": "API error", "status_code": 500}
 
     except Exception as e:
         logging.error("Excepción – fila %s | %s", fila, str(e))
-        SHEET.update_cell(fila, COL_ESTADO, "Error")
+        update_col(fila, "Estado", "Error")
         return {"error": "Conexión fallida", "status_code": 500}
