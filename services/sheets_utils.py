@@ -15,7 +15,7 @@ def get_col(sheet = SHEET):
 #funcion que actualiza el contenido de una columna seleccionada por su nombre
 def update_col(fila, nombre_columna, valor, sheet = SHEET):
     columnas = get_col(sheet)
-    col = columnas.get(nombre_columna)
+    col = columnas[nombre_columna]
     if col:
         sheet.update_cell(fila, col, valor)
     else:
