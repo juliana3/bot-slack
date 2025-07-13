@@ -10,7 +10,7 @@ from services.correo_utils import verificar_y_enviar_dni
 
 load_dotenv()
 
-API_URL = "http://localhost:3000/agregar_persona" #esto se cambia por os.getenv("PEOPLE_FORCE_URL")
+API_URL = os.getenv("PEOPLE_FORCE_URL") 
 API_TOKEN = os.getenv("PEOPLE_FORCE_TOKEN")
 
 

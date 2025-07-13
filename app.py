@@ -7,6 +7,7 @@ import requests
 import logging 
 
 
+
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
 
@@ -17,10 +18,8 @@ logging.basicConfig(
 
 app = Flask(__name__)
 
-#DEFINIMOS LAS 2 RUTAS
-#esta es la ruta que me genera mockoon
-API_URL = "http://localhost:3000/agregar_persona" #aca hay que cambiarlo por la url de la api de PF /// esto se cambia por os.getenv("PEOPLE_FORCE_URL")
-#PEOPLEFORCE_API_TOKEN = "token_falso_para_test"
+
+
 
 print("Flask arrancó", flush=True)
 @app.route('/agregar_persona', methods=['POST'])

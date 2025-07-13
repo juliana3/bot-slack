@@ -1,6 +1,9 @@
 import requests
 import logging 
 from services.sheets_utils import SHEET, get_col
+import os
+
+URL_SCRIPT = os.getenv("APPS_SCRIPT_URL")
 
 def verificar_y_enviar_dni(fila):
     columnas = get_col(SHEET)
@@ -14,7 +17,7 @@ def verificar_y_enviar_dni(fila):
         logging.info(f"Enviando solicitud de correo con foto para fila {fila}")
         try:
             response = requests.post(
-                "https://script.google.com/macros/s/AKfycbxcDYaMZzQbEXh37fQe12qQgoJaxtwEbpNx5dm6vzge8Nua3HvWR0PQYGSEgwaSBofjfg/exec",
+                URL_SCRIPT,#esto hay que cambiarlo? por que cosa?
                 json={"fila": fila}
             )
             if response.status_code == 200:
