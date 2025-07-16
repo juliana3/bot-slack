@@ -13,7 +13,7 @@ load_dotenv()
 SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 CREDS  = ServiceAccountCredentials.from_json_keyfile_name("prototipoform-07973d29cfea.json", SCOPE)
 CLIENT = gspread.authorize(CREDS)
-SHEET  = CLIENT.open("formularioPrototipo").sheet1
+SHEET  = CLIENT.open("formularioPrototipo").sheet1  #CAMBIAR POR EL NOMBRE DEL SHEETS DE PEOPLE FORCE
 COL_ESTADO = 5  # Columna donde se guarda el estado de procesamiento
 
 

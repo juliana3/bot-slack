@@ -6,7 +6,7 @@ from handlers.ingreso_handler import procesar_ingreso
 SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 CREDS  = ServiceAccountCredentials.from_json_keyfile_name("prototipoform-07973d29cfea.json", SCOPE)
 CLIENT = gspread.authorize(CREDS)
-SHEET  = CLIENT.open("formularioPrototipo").sheet1
+SHEET  = CLIENT.open("formularioPrototipo").sheet1 #CAMBIAR POR EL NOMBRE DEL SHEETS PARA PEOPLE FORCE
 
 
 
