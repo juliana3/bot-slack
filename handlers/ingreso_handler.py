@@ -2,9 +2,12 @@ import os
 import requests
 from dotenv import load_dotenv
 import logging
+
 from services.sheets_utils import SHEET, update_col
 from services.slack_utils import notificar_rrhh
-from services.correo_utils import verificar_y_enviar_dni
+from services.toPDF_utils import armar_pdf_dni
+from services.subir_pdf_a_drive import subir_pdf_a_drive
+
 
 
 
@@ -18,6 +21,15 @@ API_TOKEN = os.getenv("PEOPLE_FORCE_TOKEN")
 def procesar_ingreso(datos):
 
     fila = datos["fila"]
+
+    #generar el PDF con las imagenes del dni
+    pdf_bytes = armar_pdf_dni(datos["nombre"], datos["dni_f"], datos["dni_d"])
+
+    #subir el PDF a Google Drive
+    link_pdf = subir_pdf_a_drive(datos["nombre"], pdf_bytes)
+
+    #actualizar el sheets
+    update_col(fila, "PDF DNI", link_pdf)
 
     # Armar payload
     payload = {
@@ -39,12 +51,6 @@ def procesar_ingreso(datos):
 
             #Notifica a rrhh por slack
             notificar_rrhh(datos["nombre"], datos["email"])
-
-            # Verifica y envía el DNI si corresponde
-            try:
-                verificar_y_enviar_dni(fila)
-            except Exception as e:
-                logging.warning(f"Fallo al enviar DNI para fila {fila}: {e}")
 
             return {"mensaje": "Alta OK", "status_code": response.status_code}
         else:
