@@ -3,7 +3,7 @@ import requests
 from dotenv import load_dotenv
 import logging
 
-from services.sheets_utils import SHEET, update_col
+from services.sheets_utils import SHEET, get_col, update_col
 from services.slack_utils import notificar_rrhh
 from services.toPDF_utils import armar_pdf_dni
 from services.subir_pdf_a_drive import subir_pdf_a_drive
@@ -21,15 +21,24 @@ API_TOKEN = os.getenv("PEOPLE_FORCE_TOKEN")
 def procesar_ingreso(datos):
 
     fila = datos["fila"]
+    dni_frente = datos.get("dni_f")
+    dni_dorso = datos.get("dni_d")
 
-    #generar el PDF con las imagenes del dni
-    pdf_bytes = armar_pdf_dni(datos["nombre"], datos["dni_f"], datos["dni_d"])
 
-    #subir el PDF a Google Drive
-    link_pdf = subir_pdf_a_drive(datos["nombre"], pdf_bytes)
+    if not dni_frente or not dni_dorso:
+        logging.warning(f"No se recibieron imágenes de DNI en fila {fila}. Se saltea generación de PDF.")
+    else:
+        #generar el PDF con las imagenes del dni
+        pdf_bytes = armar_pdf_dni(datos["nombre"], datos["dni_f"], datos["dni_d"])
 
-    #actualizar el sheets
-    update_col(fila, "PDF DNI", link_pdf)
+        #subir el PDF a Google Drive
+        link_pdf = subir_pdf_a_drive(datos["nombre"], pdf_bytes)
+
+        #actualizar el sheets
+        update_col(fila, "PDF DNI", link_pdf)
+
+   
+    
 
     # Armar payload
     payload = {
