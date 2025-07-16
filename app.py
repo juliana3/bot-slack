@@ -1,4 +1,3 @@
-#punto de entrada
 from flask import Flask, jsonify, request
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -9,6 +8,7 @@ import logging
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,9 +31,6 @@ def agregar_persona():
     
     resultado = procesar_ingreso(datos)
     return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status":resultado}), 200
-
-
-
 
 
 @app.route('/reprocesar_errores', methods=['POST', 'GET'])
