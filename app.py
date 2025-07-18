@@ -10,6 +10,7 @@ import logging
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
+from handlers.documento_handler import procesar_documento
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,6 +41,20 @@ def reprocesar_errores():
     resultado = reprocesar_filas()
     return jsonify(resultado), 200
 
+
+@app.route('/subir_pdf', methods=['POST'])
+def subir_pdf():
+    try:
+        datos = request.get_json()
+        resultado = procesar_documento(datos)
+
+        if resultado.get("status") == "ok":
+            return jsonify({"mensaje": "Documento procesado correctamente"}), 200
+        else:
+            return jsonify({"error": resultado.get("mensaje", "Error al procesar documento")}), 500
+        
+    except Exception as e:
+        return jsonify({"error": f"Excepción: {str(e)}"}), 500
 
 
 # Iniciar el servidor

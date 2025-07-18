@@ -6,7 +6,6 @@ import logging
 from services.sheets_utils import SHEET, get_col, update_col
 from services.slack_utils import notificar_rrhh
 from services.toPDF_utils import armar_pdf_dni
-from services.subir_pdf_a_drive import subir_pdf_a_drive
 
 
 
@@ -21,24 +20,7 @@ API_TOKEN = os.getenv("PEOPLE_FORCE_TOKEN")
 def procesar_ingreso(datos):
 
     fila = datos["fila"]
-    dni_frente = datos.get("dni_f")
-    dni_dorso = datos.get("dni_d")
 
-
-    if not dni_frente or not dni_dorso:
-        logging.warning(f"No se recibieron imágenes de DNI en fila {fila}. Se saltea generación de PDF.")
-    else:
-        #generar el PDF con las imagenes del dni
-        pdf_bytes = armar_pdf_dni(datos["nombre"], datos["dni_f"], datos["dni_d"])
-
-        #subir el PDF a Google Drive
-        link_pdf = subir_pdf_a_drive(datos["nombre"], pdf_bytes)
-
-        #actualizar el sheets
-        update_col(fila, "PDF DNI", link_pdf)
-
-   
-    
 
     # Armar payload
     payload = {
@@ -59,7 +41,11 @@ def procesar_ingreso(datos):
             update_col(fila, "Estado","Procesada")
 
             #Notifica a rrhh por slack
-            notificar_rrhh(datos["nombre"], datos["email"])
+            notificar_rrhh(datos["nombre"], datos["email"], "alta")
+
+            employee_id = response.json().get("id") #verificar con que clave devuelve PF el json
+            if employee_id:
+                update_col(fila, "ID PF", employee_id)
 
             return {"mensaje": "Alta OK", "status_code": response.status_code}
         else:

@@ -9,8 +9,12 @@ load_dotenv()
 SLACK_BOT_TOKEN = os.getenv("SLACK_TOKEN")
 SLACK_CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")  #AHORA: es el id del canal test 
 
-def notificar_rrhh(nombre,email):
-    mensaje = f"Alta completada para: *{nombre}* (`{email}`) en PeopleForce."
+def notificar_rrhh(nombre,email, tipo):
+    if tipo == "alta":
+        mensaje = f"Alta completada para: *{nombre}* (`{email}`) en PeopleForce."
+    elif tipo == "documento":
+        mensaje = f"Documento cargado para: *{nombre}* (`{email}`) en PeopleForce."
+    
 
     headers = {
         "Authorization": f"Bearer {SLACK_BOT_TOKEN}",

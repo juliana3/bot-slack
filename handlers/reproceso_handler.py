@@ -1,9 +1,10 @@
 import gspread, os, requests, time, logging
 
 from handlers.ingreso_handler import procesar_ingreso
+from handlers.documento_handler import procesar_documento
 from services.sheets_utils import SHEET, get_col, update_col
 from services.toPDF_utils import armar_pdf_dni
-from services.subir_pdf_a_drive import subir_pdf_a_drive
+
 
 
 
@@ -16,46 +17,45 @@ def reprocesar_filas():
 
     f_procesadas = 0
     f_errores = 0
-    f_pdf_subidos = 0
 
     for index, fila in enumerate(filas[1:], start=2):
         estado = fila[columnas["Estado"] - 1].strip().lower() if fila[columnas["Estado"] - 1] else ""
-        link_pdf = fila[columnas["PDF DNI"] - 1].strip().lower() if fila[columnas["PDF DNI"] - 1] else ""
+        estado_pdf = fila[columnas["Estado PDF"] - 1].strip().lower() if fila[columnas["Estado PDF"] - 1] else ""
         
 
-        datos = {
+        datos_alta = { #estos son los datos para el ALTA
             "fila" : index,
             "nombre" : fila[1],
             "email" : fila[2],
-            "dni_f": fila[columnas["foto dni frente"] - 1],
-            "dni_d":  fila[columnas["foto dni dorso"]  - 1]
+        }
+
+        datos_doc ={
+            "fila" : index,
+            "nombre": fila[1],
+            "email": fila[2],
+            "dni_f":fila[3],
+            "dni_d": fila[4],
+            "employee_id" : fila[6]
         }
 
         #si la fila ya fue procesada solo se verifica que este el pdf subido
 
         if estado == "procesada":
-            if not link_pdf:
-                logging.info(f"Fila {index} procesada pero sin PDF. Intentando generar y subir...")
-                pdf = armar_pdf_dni(datos["nombre"], datos["dni_f"], datos["dni_d"])
 
-                if pdf:
-                    link = subir_pdf_a_drive(datos["nombre"], pdf)
-
-                    if link:
-                        update_col(index, "PDF DNI", link)
-                        f_pdf_subidos += 1
-                        logging.info(f"PDF subido exitosamente en fila {index}")
-                    else:
-                        logging.warning(f"PDF generado pero no se pudo subir (fila {index})")
+            if estado_pdf == "subido":
+                logging.info(f"Fila {index} ya procesada y PDF subido")
+                f_procesadas += 1
+            elif estado_pdf in ["error", ""]:
+                logging.info(f"Fila {index} ya procesada pero PDF no subido, se intenta subir")
+                resultado_doc = procesar_documento(datos_doc)
+                
+                if resultado_doc.get("status_code") in [200,201]:
+                    f_procesadas += 1
                 else:
-                    logging.warning(f"No se pudo generar el PDF (fila {index})")
-
-            f_procesadas += 1
-            continue
-
+                    f_errores += 1      
         elif estado in ["error", ""]: # si la fila este en error o vacia, se reintenta el alta en PF
 
-            resultado = procesar_ingreso(datos)
+            resultado = procesar_ingreso(datos_alta)
             if resultado.get("status_code") in [200,201]:
                 f_procesadas += 1
             else:
@@ -66,6 +66,5 @@ def reprocesar_filas():
     return {
         "mensaje"      : "Reproceso finalizado",
         "procesadas_ok": f_procesadas,
-        "errores"      : f_errores,
-        "pdf_subidos"  : f_pdf_subidos
+        "errores"      : f_errores
     }
