@@ -6,6 +6,7 @@ import logging
 from services.sheets_utils import SHEET, get_col, update_col
 from services.slack_utils import notificar_rrhh
 from services.toPDF_utils import armar_pdf_dni
+from services.payload_utils import payloadALTA
 
 
 
@@ -23,11 +24,7 @@ def procesar_ingreso(datos):
 
 
     # Armar payload
-    payload = {
-        "name": datos["nombre"],
-        "email": datos["email"]
-        #despues garegar el resto de datos
-    }
+    payload = payloadALTA(datos)
 
     headers = {
         "Authorization": f"Bearer {API_TOKEN}",

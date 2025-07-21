@@ -5,7 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 CREDS  = ServiceAccountCredentials.from_json_keyfile_name("prototipoform-07973d29cfea.json", SCOPE)
 CLIENT = gspread.authorize(CREDS)
-SHEET  = CLIENT.open("formularioPrototipo").sheet1
+SHEET  = CLIENT.open("Formulario_PF").sheet1
 
 #funcion que devuelve un diccionario con los nombres de las columnas y sus indices
 def get_col(sheet = SHEET):

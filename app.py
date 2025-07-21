@@ -45,8 +45,8 @@ def reprocesar_errores():
 @app.route('/subir_pdf', methods=['POST'])
 def subir_pdf():
     try:
-        datos = request.get_json()
-        resultado = procesar_documento(datos)
+        datos_pdf = request.get_json()
+        resultado = procesar_documento(datos_pdf)
 
         if resultado.get("status") == "ok":
             return jsonify({"mensaje": "Documento procesado correctamente"}), 200
