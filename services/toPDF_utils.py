@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
-CREDENTIALS_FILE = "prototipoform-07973d29cfea.json"  
+CREDENTIALS_FILE = "chatbot-people-466623-1ec1f3039c87.json"
 
 creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
 
@@ -45,7 +45,7 @@ def descargar_imagen_drive(file_id, creds): #Devuelve los bytes de una imagen de
 
 
 
-def armar_pdf_dni(nombre, link1, link2):
+def armar_pdf_dni(link1, link2):
     """Función principal: recibe links, descarga imágenes y arma el PDF."""
 
     id1 = extraer_id_drive(link1)

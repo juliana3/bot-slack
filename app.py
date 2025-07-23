@@ -29,8 +29,13 @@ def agregar_persona():
     if not datos:
         return jsonify({"error": "No se recibieron datos JSON"}), 400
     
-    resultado = procesar_ingreso(datos)
-    return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status":resultado}), 200
+    fila = datos.get("fila")
+    resultado = procesar_ingreso(datos, fila)
+
+    http_status_code = 200
+    if resultado.get("status") == "failed":
+        http_status_code = 500
+    return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status":resultado}), http_status_code
 
 
 
@@ -44,16 +49,20 @@ def reprocesar_errores():
 
 @app.route('/subir_pdf', methods=['POST'])
 def subir_pdf():
+    logging.info("Flask: Solicitud POST recibida en /subir_pdf.")
     try:
         datos_pdf = request.get_json()
+        logging.info(f"Flask: Datos recibidos en /subir_pdf: {datos_pdf}")
         resultado = procesar_documento(datos_pdf)
 
-        if resultado.get("status") == "ok":
+        if resultado.get("status_code") in [200,201]:
             return jsonify({"mensaje": "Documento procesado correctamente"}), 200
         else:
+            logging.error(f"Flask: procesar_documento falló. Resultado: {resultado}")
             return jsonify({"error": resultado.get("mensaje", "Error al procesar documento")}), 500
         
     except Exception as e:
+        logging.error("Excepción al procesar PDF: %s", str(e))
         return jsonify({"error": f"Excepción: {str(e)}"}), 500
 
 
