@@ -1,9 +1,9 @@
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 
 #configuracion del acceso a Google Sheets
 SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-CREDS  = ServiceAccountCredentials.from_json_keyfile_name("chatbot-people-466623-1ec1f3039c87.json", SCOPE)
+CREDS  = service_account.Credentials.from_service_account_file("chatbot-people-466623-1ec1f3039c87.json",scopes=SCOPE)
 CLIENT = gspread.authorize(CREDS)
 SHEET  = CLIENT.open("Formulario_PF").sheet1
 

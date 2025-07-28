@@ -1,7 +1,7 @@
 #punto de entrada
 from flask import Flask, jsonify, request
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+
 import json
 import requests
 import logging 
