@@ -1,9 +1,8 @@
 #punto de entrada
-from flask import Flask, jsonify, request
-import gspread
-
-import json
-import requests
+from flask import Flask, jsonify, request, render_template
+from dotenv import load_dotenv
+import os
+import uuid
 import logging 
 
 

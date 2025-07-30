@@ -1,0 +1,191 @@
+/* Define a CSS custom property for the shared max-width in responsive mode */
+:root {
+  --responsive-max-width: 85%; /* Default for screens <= 768px, adjusted later for <= 480px */
+}
+
+/* Base styles for all screen sizes */
+body {
+  background-color: #0c1221; /* Tu color de fondo */
+  background-image: url("../img/coloresCrombie.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* La imagen se queda fija al hacer scroll */
+  background-size: 30% auto;
+  background-position: right 25px center; /* <-- A 25px de la derecha, centrada verticalmente */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.header {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Estilos específicos para la imagen dentro del header */
+.header .img {
+  width: 100%; /* Ocupa todo el ancho disponible del .header */
+  max-width: 650px; /* Fija el ancho máximo para la imagen en escritorio */
+  height: auto;
+  border-radius: 16px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.img .img{
+  margin: 0;
+}
+
+.img {
+  /* This rule is generic and less specific than .header .img, consider if it's truly needed. */
+  width: 100%;
+  margin: 0px;
+}
+
+.form-container {
+  background-color: rgba(255, 255, 255, 0.812);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 575px; /* Fija el ancho máximo para el formulario en escritorio */
+  width: 100%; /* Permite que se achique por debajo del max-width */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.form-section {
+  margin-bottom: 40px;
+  border-bottom: 1px solid rgb(0, 0, 0);
+  padding-bottom: 30px;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+label {
+  display: block;
+  margin-top: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000000;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: #9696967a;
+  font-size: 14px;
+  color: #000;
+  box-sizing: border-box;
+  transition: 0.2s ease all;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #007aff;
+}
+
+button {
+  margin-top: 30px;
+  width: 100%;
+  padding: 14px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #005ecb;
+}
+
+
+/* Para pantallas más pequeñas de 768px (tablets y móviles grandes) */
+@media (max-width: 768px) {
+  body {
+    padding: 20px 15px;
+    /* Ajusta la posición y tamaño del fondo para móviles */
+    background-size: 50% auto; /* La imagen al 50% del ancho del viewport en tablets */
+    background-position: right 15px center; /* Menor margen a la derecha, centrado verticalmente */
+  }
+
+  /* Aquí es donde la imagen y el formulario empiezan a usar el ancho responsivo */
+  .header .img,
+  .form-container {
+    max-width: var(--responsive-max-width); /* Utiliza la variable responsiva */
+  }
+
+  .form-container {
+    padding: 30px 25px;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  button {
+    padding: 12px;
+    font-size: 15px;
+  }
+}
+
+/* Para pantallas más pequeñas de 480px (móviles) */
+@media (max-width: 480px) {
+  body {
+    padding: 15px 10px;
+    /* Ajusta aún más la posición y tamaño del fondo para móviles muy pequeños */
+    background-size: 60% auto; /* La imagen al 60% del ancho del viewport en móviles pequeños */
+    background-position: right 10px center; /* Margen aún menor a la derecha, centrado verticalmente */
+  }
+
+  /* Ajusta aún más la variable responsiva para pantallas muy pequeñas */
+  :root {
+    --responsive-max-width: 90%;
+  }
+
+  .form-container {
+    padding: 20px 15px;
+    border-radius: 15px;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+  }
+
+  label {
+    margin-top: 12px;
+  }
+
+  button {
+    margin-top: 25px;
+  }
+}
