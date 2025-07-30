@@ -1,86 +1,67 @@
-import re
-import io
-import os
 import logging
-from fpdf import FPDF
+import requests
+import io
 from PIL import Image
-from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.utils import ImageReader
+from services.s3_utils import descargar_archivo_desde_s3
 
-SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
-CREDENTIALS_FILE = "chatbot-people-466623-1ec1f3039c87.json"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
-creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
+def armar_pdf_dni(nombre_persona, bucket_name, object_key_dni_frente, object_key_dni_dorso):
+    """
+    Descarga imágenes de DNI desde un bucket de S3 usando sus object_key,
+    y las usa para crear un PDF.
 
-def extraer_id_drive(link): #devuelve un string con el ID del archivo de Google Drive
-    """Extrae el ID de archivo desde un link de Google Drive."""
-    patrones = [
-        r"/d/([a-zA-Z0-9_-]{25,})",   # formato /d/ID/view
-        r"id=([a-zA-Z0-9_-]{25,})"    # formato id=ID
-    ]
-    for patron in patrones:
-        match = re.search(patron, link)
-        if match:
-            return match.group(1)
-    return None
+    Args:
+        nombre_persona (str): Nombre de la persona para fines de logging.
+        bucket_name (str): Nombre del bucket de S3 donde se encuentran las imágenes.
+        object_key_dni_frente (str): Clave del objeto (ruta) de la imagen del DNI frente en S3.
+        object_key_dni_dorso (str): Clave del objeto (ruta) de la imagen del DNI dorso en S3.
 
-def descargar_imagen_drive(file_id, creds): #Devuelve los bytes de una imagen de Google Drive
-    """Descarga una imagen desde Drive como bytes."""
+    Returns:
+        bytes: Contenido binario del PDF generado, o None si falla.
+    """
     try:
-        servicio = build("drive", "v3", credentials=creds)
-        request = servicio.files().get_media(fileId=file_id)
+        logging.info(f"armar_pdf_dni: Descargando imagen de DNI frente (object_key: {object_key_dni_frente}) desde S3.")
+        # Usar la función de s3_utils para descargar la imagen
+        contenido_frente = descargar_archivo_desde_s3(bucket_name, object_key_dni_frente)
+        if contenido_frente is None:
+            logging.error(f"armar_pdf_dni: No se pudo descargar la imagen del DNI frente para {nombre_persona}.")
+            return None
+        img_frente = Image.open(io.BytesIO(contenido_frente))
+
+        logging.info(f"armar_pdf_dni: Descargando imagen de DNI dorso (object_key: {object_key_dni_dorso}) desde S3.")
+        # Usar la función de s3_utils para descargar la imagen
+        contenido_dorso = descargar_archivo_desde_s3(bucket_name, object_key_dni_dorso)
+        if contenido_dorso is None:
+            logging.error(f"armar_pdf_dni: No se pudo descargar la imagen del DNI dorso para {nombre_persona}.")
+            return None
+        img_dorso = Image.open(io.BytesIO(contenido_dorso))
+
+        # Crear el PDF
         buffer = io.BytesIO()
-        downloader = MediaIoBaseDownload(buffer, request)
+        p = canvas.Canvas(buffer, pagesize=A4)
+        
+        # Ajustar tamaño y posición de las imágenes en el PDF
+        img_width, img_height = 400, 300 
+        
+        # DNI Frente
+        p.drawImage(ImageReader(img_frente), 50, A4[1] - 50 - img_height - 10, width=img_width, height=img_height)
 
-        done = False
-        while not done:
-            status, done = downloader.next_chunk()
-
+        # DNI Dorso
+        p.drawImage(ImageReader(img_dorso), 50, A4[1] - 50 - (2 * img_height) - 20, width=img_width, height=img_height)
+        
+        p.showPage()
+        p.save()
         buffer.seek(0)
-        return buffer.read()
-    except Exception as e:
-        logging.error(f"Error al descargar imagen de Drive ({file_id}): {str(e)}")
-        return None
-
-
-
-def armar_pdf_dni(link1, link2):
-    """Función principal: recibe links, descarga imágenes y arma el PDF."""
-
-    id1 = extraer_id_drive(link1)
-    id2 = extraer_id_drive(link2)
-
-    if not id1 or not id2:
-        logging.error("No se pudieron extraer los IDs de las imágenes")
-        return None
-
-    img1 = descargar_imagen_drive(id1, creds)
-    img2 = descargar_imagen_drive(id2, creds)
-
-    if not img1 or not img2:
-        logging.error("Error al descargar una o ambas imágenes")
-        return None
-
-    try:
-        pdf = FPDF()
-        pdf.set_auto_page_break(0)
-
-        for index, imagen in enumerate([img1, img2]):
-            pdf.add_page()
-            temp_path = f"temp_dni_{index}.jpg"
-
-            #convertimos a jpg si es necesario
-            Image.open(io.BytesIO(imagen)).convert("RGB").save(temp_path, "JPEG")
-
-            #insertar en el PDF
-            pdf.image(temp_path, x=10, y=10, w= 180)
-
-            #borramos el archivo temporal
-            os.remove(temp_path)
-        buffer = io.BytesIO(pdf.output(dest="S").encode("latin1"))
         return buffer.getvalue()
 
     except Exception as e:
-        logging.error(f"Error al armar el PDF: {str(e)}")
+        logging.error(f"armar_pdf_dni: Excepción inesperada al procesar DNI para {nombre_persona}: {e}", exc_info=True)
         return None
+

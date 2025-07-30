@@ -11,6 +11,7 @@ load_dotenv()
 
 API_URL = os.getenv("PEOPLE_FORCE_URL") 
 API_TOKEN = os.getenv("PEOPLE_FORCE_TOKEN")
+folder_id = os.getenv("DOCUMENT_FOLDER_ID_PF")
 
 
 def subir_documento(employee_id, pdf, file_name, titulo = "DNI"):

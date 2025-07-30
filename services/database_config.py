@@ -4,7 +4,6 @@ import os
 import logging
 from dotenv import load_dotenv
 
-import psycopg2 #adaptador para postgres
 from sqlalchemy  import create_engine, Column, Integer, String, Text #tipos de ccolumnas
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -74,7 +73,7 @@ Session = None
 if DATABASE_URL:
     try:
         engine= create_engine(DATABASE_URL)
-        Base.Metadata.create_all(engine)
+        Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         logging.info("Conexión a PostgreSQL y modelos inicializados con exito")
     except Exception as e:
