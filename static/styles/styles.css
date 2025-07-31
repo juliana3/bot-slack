@@ -1,9 +1,9 @@
-/* Define a CSS custom property for the shared max-width in responsive mode */
+/* Define una propiedad personalizada CSS para el ancho máximo compartido en modo responsivo */
 :root {
-  --responsive-max-width: 85%; /* Default for screens <= 768px, adjusted later for <= 480px */
+  --responsive-max-width: 85%; /* Por defecto para pantallas <= 768px, ajustado luego para <= 480px */
 }
 
-/* Base styles for all screen sizes */
+/* Estilos base para todos los tamaños de pantalla */
 body {
   background-color: #0c1221; /* Tu color de fondo */
   background-image: url("../img/coloresCrombie.png");
@@ -37,12 +37,10 @@ body {
   margin-right: auto;
 }
 
-.img .img{
-  margin: 0;
-}
-
+/* Nota: Esta regla es muy genérica y menos específica que .header .img.
+   Considera si realmente la necesitas y si no causa conflictos.
+   Si .header .img ya maneja la imagen principal, esta podría ser redundante o problemática. */
 .img {
-  /* This rule is generic and less specific than .header .img, consider if it's truly needed. */
   width: 100%;
   margin: 0px;
 }
@@ -93,6 +91,17 @@ textarea {
   color: #000;
   box-sizing: border-box;
   transition: 0.2s ease all;
+}
+
+/* IMPORTANTE para intl-tel-input: */
+/* El plugin intl-tel-input envuelve el input 'tel' en un div y añade un botón.
+   La regla `width: 100%;` en el input podría necesitar ser ajustada o sobrescrita
+   para el input de teléfono específico (`#celular`) para que se adapte
+   correctamente al ancho total de su contenedor generado por el plugin.
+   Considera añadir un estilo específico para `.iti__flag-container + .form-control`
+   (clase generada por el plugin) o para el contenedor principal de intl-tel-input. */
+.iti { /* Clase principal del contenedor intl-tel-input */
+    width: 100%; /* Asegura que el contenedor del input de teléfono ocupe todo el ancho disponible */
 }
 
 input:focus,

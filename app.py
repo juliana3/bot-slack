@@ -37,20 +37,24 @@ def mostar_formulario():
 
 
 @app.route('/agregar_persona', methods=['POST'])
+
 def agregar_persona():
-    datos = request.json
-    if not datos:
-        return jsonify({"error": "No se recibieron datos JSON"}), 400
-    
-    #nueva sesion de db
+    # Obtener datos del formulario como diccionario
+    datos = request.form.to_dict()
+
+    # Obtener archivos
+    dni_frente_file = request.files.get('dni-frente')
+    dni_dorso_file = request.files.get('dni-dorso')
+
     session = Session()
     try:
-        resultado = procesar_ingreso(datos, session)
+        # Pasar también los archivos a procesar_ingreso
+        resultado = procesar_ingreso(datos, session, dni_frente_file, dni_dorso_file)
 
         http_status_code = 200
         if resultado.get("status") == "failed":
             http_status_code = 500
-        return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status":resultado}), http_status_code
+        return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status": resultado}), http_status_code
     finally:
         session.close()
 

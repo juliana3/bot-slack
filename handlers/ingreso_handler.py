@@ -27,91 +27,27 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos, session):
-
-    dni_frente_s3 = datos.get("dni-frente","")
-    dni_dorso_s3 = datos.get("dni-dorso","")
-    fila_sheets = None
-
-    #Guardar los datos iniciales en Sheets como respaldo
-    logging.info("Intentando añadir datos a Google Sheets..")
-    fila_sheets = cargar_sheets(datos)
-
-    if fila_sheets is None:
-        logging.error("Falló la escritura en Google Sheets. Continuando sin respaldo")
-    
-    #Guardar los datos iniciales en la Base de Datos
-    logging.info("Intentando guardar datos iniciales en PostgreSQL...")
-    ingresante_id_db = guardar_ingresante(datos, session)
-    if ingresante_id_db is None:
-        logging.error("Falló la escritura inicial en PostgreSQL")
-        return {"error": "Error al guardar datos en la base de datos princcipal", "status": "failed", "status_code": 500}
-
-    # Armar payload para mandar a People Force
-    payload = payloadALTA(datos)
-
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}",
-        "Content-Type": "application/json"
-    }
-
+def procesar_ingreso(datos: dict, session):
     try:
-        response = requests.post(API_URL, headers=headers, json=payload)
-        if response.status_code in [200, 201]:
-            logging.info(f"Alta OK para ingresante ID DB: {ingresante_id_db} | response: {response.json()}")
-            #actualizar estado_alta en la BD
-            actualizar_estado(ingresante_id_db, "estado_alta", "Procesada", session)
+        # Extraer datos de imagen si hace falta
+        dni_frente_s3 = datos.get("dni-frente", "")
+        dni_dorso_s3 = datos.get("dni-dorso", "")
 
-            #Notifica a rrhh por slack
-            notificar_rrhh(payload["first_name"], payload["last_name"],payload["personal_email"], "alta")
+        # Guardar en la base de datos
+        logging.info("Intentando guardar datos en PostgreSQL...")
+        ingresante_id_db = guardar_ingresante(datos, session)
 
+        if not ingresante_id_db:
+            logging.error("Falló la escritura en PostgreSQL.")
+            return {
+                "error": "Error al guardar datos en la base de datos",
+                "status": "failed",
+                "status_code": 500
+            }
 
-            #capturar el ID de la persona creada
-            employee_id = response.json().get("id") #verificar con que clave devuelve PF el json
-            if employee_id:
-                actualizar_estado(ingresante_id_db, "id_pf", employee_id, session)
+        logging.info(f"Datos guardados con éxito. ID: {ingresante_id_db}")
+        return {"status": "success", "message": "Persona agregada correctamente", "id": ingresante_id_db}
 
-                #armar el dict para procesar documento
-                payload_doc = {
-                    "document_id_db": ingresante_id_db,
-                    "employee_id": employee_id,
-                    "nombre": datos.get("nombre", ""),
-                    "apellido": datos.get("apellido", ""),
-                    "email": datos.get("email", ""),
-                    "dni_f": dni_frente_s3,
-                    "dni_d": dni_dorso_s3,
-                }
-
-                try:
-                    time.sleep(5) # Pausa de 5 segundos, ajustar si es necesario.
-                    
-                    logging.info(f"Flask: Llamando a procesar_documento para fila ingresante ID BD: {ingresante_id_db}")
-                    resultado_doc = procesar_documento(payload_doc, session)
-
-                    if resultado_doc.get("status_code") in [200,201]:
-                        logging.info(f"Flask: Documento procesado y subido correctamente para ingresante ID BD: {ingresante_id_db}")
-
-                        return {"status": "success", "message": "Persona agregada y documento subido."}
-                    else:
-                        logging.error(f"Flask: Error al procesar documento para ingreante ID DB:{ingresante_id_db}: {resultado_doc}")
-                        return {"status": "failed", "message": "Persona agregada pero documento falló.","error": resultado_doc.get('error')}
-                except requests.exceptions.RequestException as e:
-                    logging.error(f"Excepcion al llamr procesar_documento para ingresante ID BD: {ingresante_id_db}: {str(e)}")
-
-                    return {"status": "failed", "message": "persona agregada pero documento falló.", "error": str(e)}
-
-            #si no obtuvo el ID
-            return {"mensaje": "Alta OK pero ID no obtenido", "status": "partial_success"}
-        else:
-            logging.error(f"Alta ERROR para ingresante ID BD: {ingresante_id_db} | {response.text}")
-            actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
-            return {"error": "API error", "status": "failed"}
-
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Excepción en solicitud a People Force para ingresante ID DB: {ingresante_id_db} | {str(e)}")
-        actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
-        return {"error": "Conexíon con PeopleForce fallida", "status": "failed", "status_code": 500}
     except Exception as e:
-        logging.error(f"Excepción para ingresante ID BD: {ingresante_id_db} | {str(e)}" )
-        actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
+        logging.exception(f"Error general al procesar ingreso: {str(e)}")
         return {"error": "Error interno", "status": "failed", "status_code": 500}
