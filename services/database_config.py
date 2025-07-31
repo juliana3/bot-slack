@@ -1,5 +1,3 @@
-#aca va toda la logica de la base de datos
-
 import os
 import logging
 from dotenv import load_dotenv

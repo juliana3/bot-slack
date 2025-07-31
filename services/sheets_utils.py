@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 
 #configuracion del acceso a Google Sheets
 SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-CREDS  = service_account.Credentials.from_service_account_file("chatbot-people-466623-1ec1f3039c87.json",scopes=SCOPE)
+CREDS  = service_account.Credentials.from_service_account_file("chatbot-people-466623-b7adc1e90d34.json",scopes=SCOPE)
 CLIENT = gspread.authorize(CREDS)
 SHEET  = CLIENT.open("Respaldo-ingresos").sheet1
 
