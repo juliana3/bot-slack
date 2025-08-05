@@ -43,18 +43,25 @@ def agregar_persona():
     datos = request.form.to_dict()
 
     # Obtener archivos
-    dni_frente_file = request.files.get('dni-frente')
-    dni_dorso_file = request.files.get('dni-dorso')
+    dni_frente_file = request.files.get("dni-frente")
+    dni_dorso_file = request.files.get("dni-dorso")
+
+    # Agregar a datos
+    datos["dni-frente"] = dni_frente_file
+    datos["dni-dorso"] = dni_dorso_file
 
     session = Session()
     try:
         # Pasar también los archivos a procesar_ingreso
-        resultado = procesar_ingreso(datos, session, dni_frente_file, dni_dorso_file)
+        resultado = procesar_ingreso(datos, session)
 
         http_status_code = 200
         if resultado.get("status") == "failed":
             http_status_code = 500
-        return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status": resultado}), http_status_code
+        # Devolvemos solo los campos de texto (sin archivos) para evitar el error MODIFICAR PARA PODER ENVIAR IMAGENES
+        datos_sin_archivos = {k: v for k, v in datos.items() if not hasattr(v, "read")}
+
+        return jsonify({"mensaje": "Recibido correctamente", "datos": datos_sin_archivos, "status": resultado}), http_status_code
     finally:
         session.close()
 

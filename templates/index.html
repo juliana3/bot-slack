@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Crombie Form</title>
+  <title>Formulario Crombie</title>
   <link rel="stylesheet" href="../static/styles/styles.css"/>
   <link rel="icon" type="image/x-icon" href="../static/img/Logo.png" />
   <link rel="stylesheet" href="../static/styles/vendor/intlTelInput.min.css"/>
@@ -20,8 +20,7 @@
       <img src="../static/img/fondo.png" alt="Portada Crombie!" class="img" />
     </div> 
 
-    <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona">
-      
+    <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona">     
       <h2>Ingreso Personal - Datos</h2>
       <h4>¡Bienvenid@ a Crombie! 🙋‍♀️</h4>
         <p>
@@ -31,8 +30,7 @@
           información es muy importante para nosotros y será tratada con total
           confidencialidad y cuidado. ¡Gracias por tomarte unos minutos para
           completarlo!
-        </p>
-        
+        </p>       
       <!-- 🔹 Sección 1: Datos Personales -->
       <div class="form-section">
         <label for="nombre">Nombre:</label>
@@ -63,13 +61,13 @@
         <input type="tel" id="celular" name="celular" required />
 
         <label for="fecha-nacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" />
+        <input type="date" id="fecha_nacimiento" name="fecha-nacimiento" />
 
         <label for="nivel-terciario">Nivel Educativo Terciario:</label>
-        <input type="text" id="nivel-terciario" name="nivel-terciario" />
+        <input type="text" id="nivel_terciario" name="nivel-terciario" />
 
         <label for="nivel-universitario">Nivel Educativo Universitario:</label>
-        <input type="text" id="nivel-universitario" name="nivel-universitario" />
+        <input type="text" id="nivel_universitario" name="nivel-universitario" />
       </div>
 
       <!-- 🔹 Tipo de contrato -->
@@ -89,25 +87,24 @@
       <!-- 🔹 Sección 2: Datos Bancarios Internacionales -->
       <div class="form-section" id="bancario-internacional" style="display: none">
         <label for="bank-name">Bank Name:</label>
-        <input type="text" id="bank-name" name="bank-name" />
+        <input type="text" id="bank_name" name="bank-name" />
 
         <label for="bank-address">Bank Address:</label>
-        <input type="text" id="bank-address" name="bank-address" />
-
+        <input type="text" id="bank_address" name="bank-address" />
         <label for="swift-code">Bank SWIFT Code:</label>
-        <input type="text" id="swift-code" name="swift-code" />
+        <input type="text" id="swift_code" name="swift-code" />
 
         <label for="account-holder">Account Holder:</label>
-        <input type="text" id="account-holder" name="account-holder" />
+        <input type="text" id="account_holder" name="account-holder" />
 
         <label for="holder-address">Holder Address:</label>
-        <input type="text" id="holder-address" name="holder-address" />
+        <input type="text" id="holder_address" name="holder-address" />
 
         <label for="account-number">Account Number:</label>
-        <input type="text" id="account-number" name="account-number" />
+        <input type="text" id="account_number" name="account-number" />
 
         <label for="routing-number">Routing Number:</label>
-        <input type="text" id="routing-number" name="routing-number" />
+        <input type="text" id="routing_number" name="routing-number" />
 
         <label for="tipo-cuenta">Tipo de cuenta:</label>
         <select id="tipo-cuenta" name="tipo-cuenta">
@@ -116,7 +113,7 @@
         </select>
 
         <label for="zip">ZIP Code (Código Postal):</label>
-        <input type="text" id="zip" name="zip" />
+        <input type="text" id="zip_code" name="zip" />
       </div>
 
       <!-- 🔹 Sección 3: Datos Bancarios Nacionales -->
@@ -125,7 +122,7 @@
         <input type="text" id="banco" name="banco" />
 
         <label for="cuenta">Nº Cuenta:</label>
-        <input type="text" id="cuenta" name="cuenta" />
+        <input type="text" id="numero_cuenta" name="cuenta" />
 
         <label for="cbu" title="CBU debe tener 22 números">CBU:</label>
         <input type="text" id="cbu" name="cbu" pattern="\d{22}" />
@@ -134,10 +131,10 @@
         <input type="text" id="alias" name="alias" />
 
         <label for="obra-social">Nombre de la obra social/prepaga:</label>
-        <input type="text" id="obra-social" name="obra-social" />
+        <input type="text" id="obra_social" name="obra-social" />
 
         <label for="codigo-afip">Código de identificación de la Obra Social en AFIP:</label>
-        <input type="text" id="codigo-afip" name="codigo-afip" />
+        <input type="text" id="codigo_afip" name="codigo-afip" />
       </div>
 
       <button type="submit">Enviar formulario</button>
