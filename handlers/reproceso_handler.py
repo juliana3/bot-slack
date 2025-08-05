@@ -2,122 +2,96 @@ import  time, logging
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.documento_handler import procesar_documento
-
-
-from services.database_config import Ingresante, Session
+from services.db_operations import obtener_ingresante_por_estado, obtener_ingresante_por_id
 
 
 
 def reprocesar_filas():
     logging.info("Iniciando reproceso de registros en PostgreSQL")
 
-    #obtener todos los valores de la hoja de una sola vez
-    session = Session()
-
     f_procesadas = 0
     f_errores = 0
 
     try:
         # Consultar registros con errores o PDF pendiente en PostgreSQL
-        query_errors_alta = session.query(Ingresante).filter(
-            Ingresante.estado_alta.in_(['Error', 'Pendiente', ''])
-        )
-
-        query_errors_pdf = session.query(Ingresante).filter(
-            Ingresante.estado_alta == 'Procesada',
-            Ingresante.estado_pdf.in_(['Error', 'Pendiente', ''])
-        )
-
-        reprocess_ingresantes = {}
-        for ingresante in query_errors_alta.all():
-            reprocess_ingresantes[ingresante.id] = ingresante
-        for ingresante in query_errors_pdf.all():
-            reprocess_ingresantes[ingresante.id] = ingresante
-
-        logging.info(f"Se encontraron {len(reprocess_ingresantes)} registros en PostgreSQL para reprocesar.")
-
-        for ingresante_id_db, ingresante_obj in reprocess_ingresantes.items():
-            logging.info(f"Procesando registro DB ID: {ingresante_id_db} (DNI: {ingresante_obj.dni})...")
-
-            estado_db = ingresante_obj.estado_alta.strip().lower()
-            estado_pdf_db = ingresante_obj.estado_pdf.strip().lower()
-
-            # Construir datos_para_procesar_ingreso dinámicamente
-            # Se excluyen los campos de estado y el 'id' de la DB, ya que procesar_ingreso
-            # espera los datos del formulario original y las URLs de S3.
-            datos_ingreso = {
-                column.name: getattr(ingresante_obj, column.name)
-                for column in Ingresante.__table__.columns
-                if column.name not in ['id', 'estado_alta', 'id_pf', 'estado_pdf']
-            } 
+        ingresantes_a_reprocesar = obtener_ingresante_por_estado()
+        logging.info(f"Se encontraron {len(ingresantes_a_reprocesar)} registros para reprocesar")
 
 
-            # Si el alta en PeopleForce tiene error, reintentar alta
-            if estado_db in ["error", "pendiente", ""]:
+        for ingresante in ingresantes_a_reprocesar:
+            ingresante_id_db = ingresante.get('id')
+            dni = ingresante.get('dni')
+            
+            logging.info(f"Procesando registro DB ID: {ingresante_id_db} (DNI: {dni})....")
+
+            estado_alta_db = ingresante.get('estado_alta', '').strip().lower()
+            estado_pdf_db = ingresante.get('estado_pdf', '').strip().lower()
+            datos_ingreso = ingresante
+
+            if estado_alta_db in ["error","pendiente",""]:
                 logging.info(f"Reintentando alta de registro DB ID: {ingresante_id_db} en PeopleForce.")
-                # procesar_ingreso espera el JSON original del formulario y la sesión
-                resultado_alta = procesar_ingreso(datos_ingreso, session)
-                
-                if resultado_alta.get("status") == "success" or resultado_alta.get("status") == "partial_success":
-                    logging.info(f"Registro DB ID: {ingresante_id_db} reprocesado (alta) correctamente.")
-                    f_procesadas += 1
-                    
-                    session.refresh(ingresante_obj) # Refrescar el objeto para obtener los últimos datos de la DB
-                    employee_id_actualizado = ingresante_obj.id_pf
 
-                    # Si el PDF tiene error o está pendiente Y tenemos un employee_id
-                    if estado_pdf_db in ["error", "pendiente", ""] and employee_id_actualizado:
-                        logging.info(f"Intentando subir PDF de registro DB ID: {ingresante_id_db}.")
+                #reprocesar ingreso
+                resultado_alta = procesar_ingreso(datos_ingreso)
+                if resultado_alta.get("status") == "succes" or resultado_alta.get("status") == "partial_success":
+                    logging.info(f"Alta del registro DB ID: {ingresante_id_db} reprocesada correctamente")
+                    f_procesadas +=1
+
+                    ingresante_actualizado = obtener_ingresante_por_id(ingresante_id_db)
+                    employee_id_actualizado= ingresante_actualizado.get('id_pf') if ingresante_actualizado else None
+
+                    #si estado_alta esta ok pero estado_pdf no
+                    if estado_pdf_db in ["error","pendiente",""] and employee_id_actualizado:
+                        logging.info(f"Intentando subir PDF de BD ID: {ingresante_id_db}.")
                         datos_doc = {
                             "document_id_db": ingresante_id_db,
                             "employee_id": employee_id_actualizado,
-                            "nombre": ingresante_obj.nombre,
-                            "apellido": ingresante_obj.apellido,
-                            "email": ingresante_obj.email,
-                            "dni_f": ingresante_obj.dni_frente, # URLs de S3
-                            "dni_d": ingresante_obj.dni_dorso,  # URLs de S3
+                            "nombre": ingresante.get('nombre'),
+                            "apellido": ingresante.get('apellido'),
+                            "email": ingresante.get('email'),
+                            "dni_f": ingresante.get('dni_frente'),
+                            "dni_d": ingresante.get('dni_dorso'),
                         }
-                        resultado_doc = procesar_documento(datos_doc, session) # Pasar la sesión
+
+                        #procesar documento
+                        resultado_doc = procesar_documento(datos_doc)
                         if resultado_doc.get("status_code") in [200, 201]:
-                            logging.info(f"PDF de registro DB ID: {ingresante_id_db} subido correctamente.")
+                            logging.info(f"PDF de DB ID: {ingresante_id_db} subido correctamente a PeopleForce")
                         else:
-                            logging.error(f"Error al subir PDF de registro DB ID: {ingresante_id_db}: {resultado_doc.get('error', 'Error desconocido')}")
-                            f_errores += 1
+                            logging.error(f"Error al subir PDF de DB ID: {ingresante_id_db}: {resultado_doc.get('error', 'Error desconocido')}")
+                            f_errores +=1
                     elif not employee_id_actualizado:
-                        logging.warning(f"No se pudo reintentar PDF para DB ID: {ingresante_id_db} porque no se obtuvo employee_id.")
-                    
+                        logging.warning(f"No se pudo reintentar PDF para DB ID: {ingresante_id_db} porque no se obtuvo employee_id")
                 else:
-                    logging.error(f"Error al reprocesar alta de registro DB ID: {ingresante_id_db}: {resultado_alta.get('error', 'Error desconocido')}")
-                    f_errores += 1
-            
-            # Si el alta ya está procesada pero el PDF tiene error, reintentar solo PDF
-            elif estado_db == "procesada" and estado_pdf_db in ["error", "pendiente", ""]:
-                logging.info(f"Reintentando subir PDF de registro DB ID: {ingresante_id_db} (alta ya procesada).")
+                    logging.error(f"Error al reprocesar alta en PeopleForce para el registro DB ID: {ingresante_id_db}: {resultado_alta.get('error', 'Error desconocido')}")
+                    f_errores +=1
+            elif estado_alta_db == "procesada" and estado_pdf_db in ["pendiente","error",""]:
+                logging.info(f"Reintentando subir PDF para DB ID: {ingresante_id_db}")
+
                 datos_doc = {
                     "document_id_db": ingresante_id_db,
-                    "employee_id": ingresante_obj.id_pf,
-                    "nombre": ingresante_obj.nombre,
-                    "apellido": ingresante_obj.apellido,
-                    "email": ingresante_obj.email,
-                    "dni_f": ingresante_obj.dni_frente,
-                    "dni_d": ingresante_obj.dni_dorso,
+                    "employee_id": ingresante.get('id_pf'),
+                    "nombre": ingresante.get('nombre'),
+                    "apellido": ingresante.get('apellido'),
+                    "email": ingresante.get('email'),
+                    "dni_f": ingresante.get('dni_frente'),
+                    "dni_d": ingresante.get('dni_dorso'),
                 }
-                resultado_doc = procesar_documento(datos_doc, session) # Pasar la sesión
-                if resultado_doc.get("status_code") in [200, 201]:
-                    logging.info(f"PDF de registro DB ID: {ingresante_id_db} subido correctamente.")
+                resultado_doc = procesar_documento(datos_doc)
+
+                if resultado_doc.get("status_code") in [200,201]:
+                    logging.info(f"PDF de DB ID: {ingresante_id_db} subido correctamente aa PeopleForce")
                     f_procesadas += 1
                 else:
-                    logging.error(f"Error al subir PDF de registro DB ID: {ingresante_id_db}: {resultado_doc.get('error', 'Error desconocido')}")
+                    logging.error(f"Error al subir PDF de DB ID: {ingresante_id_db} a PeopleForce")
                     f_errores += 1
-            
+
             time.sleep(5)
 
     except Exception as e:
         logging.error(f"Excepción general en reprocesar_filas: {str(e)}", exc_info=True)
         return {"error": "Error interno en reproceso", "status": "failed", "status_code": 500}
     finally:
-        session.close()
-
         time.sleep(5)  # pausa mínima para no saturar PeopleForce
 
     logging.info(f"Reproceso finalizado. Filas reprocesadas OK: {f_procesadas}, Filas con errores: {f_errores}")

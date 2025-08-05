@@ -1,48 +1,62 @@
 
-
-def detectar_entidad(fila_data, columnas):
-    valor = fila_data[columnas["CBU"] -1] if "CBU" in columnas and columnas["CBU"] -1 < len(fila_data) else ""
-    if valor and valor.strip() != "":
-        return "nacional"
-    else:
-        return "extranjera"
-
-
-def payloadALTA(nro_fila, columnas, fila_data):
-    #comprobacion para saber si la columna existe y si el indice es valido
-    get_val = lambda col_name: fila_data[columnas[col_name] - 1] if col_name in columnas and columnas[col_name] - 1 < len(fila_data) else ""
-
+def payloadALTA(datos):
     #arma el payload con los datos de la fila
     payload = {
-        "first_name" : get_val("Nombre"),
-        "last_name": get_val("Apellido"),
-        "personal_email" : get_val("Email"), #o personal_email
-        "dni" : get_val("DNI"),
-        "direccion" : get_val("Domicilio Real"),
-        "localidad" : get_val("Localidad"),
-        "celular": get_val("Celular"),
-        "date_of_birth" : get_val("Fecha de Nacimiento"),
-        "obra_social" : get_val("Nombre de la Obra Social o Prepaga"),
-        "código_obra_social" : get_val("Código de Identificación"),
+        "first_name" : datos.get("nombre", ""),
+        "last_name": datos.get("apellido", ""),
+        "personal_email" : datos.get("email", ""),
+        "dni" : datos.get("dni", ""),
+        "direccion" : datos.get("domicilio", ""),
+        "localidad" : datos.get("localidad", ""),
+        "celular": datos.get("celular", ""),
+        "date_of_birth" : datos.get("fecha_nacimiento", ""),
+        "obra_social" : datos.get("obra_social", ""),
+        "código_obra_social" : datos.get("codigo_afip", ""),
     }
     
-    if detectar_entidad(fila_data, columnas) == "nacional":
-        payload.update({
-            "banco_1" : get_val("Banco"), #y todos los demas
-        })
+    if datos.get("tipo_contrato") == "Relación de Dependencia" or datos.get("tipo_contrato") == "Monotributo":
+        if datos.get("localidad").lower() != "santa fe":
+            #deposito y transferencia con los mismos datos
+            payload.update({
+                #deposito
+                "banco_2" : datos.get("banco"),
+                "nro_de_cuenta_3" : datos.get("numero_cuenta"),
+                "alias_3" : datos.get("alias"),
+                "cbu_3": datos.get("cbu"),
+                "alias_3" : datos.get("cuil"),
+
+
+                #transferencia
+                "banco": datos.get("banco"),
+                "nro_de_cuenta_2" : datos.get("numero_cuenta"),
+                "alias_2": datos.get("alias"),
+                "cbu_2": datos.get("cbu"),
+                "cuil_2" : datos.get("cuil"),
+            })
+        else:
+            payload.update({
+                #transferencia
+                "banco": datos.get("banco"),
+                "nro_de_cuenta_2" : datos.get("numero_cuenta"),
+                "alias_2": datos.get("alias"),
+                "cbu_2": datos.get("cbu"),
+                "cuil_2" : datos.get("cuil"),
+            })
     else:
         payload.update({
-            "banco_3" : get_val("Bank Name"),
-            "dirección_del_banco_2": get_val("Bank Address"),
-            "bank_swift_code_2" : get_val("Bank Swift Code"),
-            "account_holder_2": get_val("Account Holder"),
-            "routing_number_2": get_val("Routing Number"),
-            "tipo_de_cuenta_2" : get_val("Tipo de Cuenta"),
-            "zip_code_2" : get_val("Zip Code"),
+            "banco_3" : datos.get("bank_name"),
+            "dirección_del_banco_2": datos.get("bank_address"),
+            "bank_swift_code_2" : datos.get("swift_code"),
+            "account_holder_2": datos.get("account_holder"),
+            "routing_number_2": datos.get("routing_number"),
+            "tipo_de_cuenta_2" : datos.get("tipo_cuenta"),
+            "zip_code_2" : datos.get("zip_code"),
         })
 
     return payload
 
+
+#esta me parece que no funciona
 def payloadPDF(nro_fila, columnas, fila_data):
     #comprobacion para saber si la columna existe y si el indice es valido
     get_val = lambda col_name: fila_data[columnas[col_name] - 1] if col_name in columnas and columnas[col_name] - 1 < len(fila_data) else ""

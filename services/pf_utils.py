@@ -21,8 +21,10 @@ def subir_documento(employee_id, pdf, file_name, titulo = "DNI"):
             "Authorization" : f"Bearer {API_TOKEN}",
         }
         files = {
-            "title": (None, titulo),
+            "document_folder_id": (None, folder_id),
+            "name": (None, titulo),
             "document": (file_name, pdf, "application/pdf")
+
         }
 
         response = requests.post(url, headers=headers, files=files)

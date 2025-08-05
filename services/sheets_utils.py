@@ -1,4 +1,5 @@
 import logging
+import re
 import gspread
 from google.oauth2 import service_account
 
@@ -22,36 +23,35 @@ def update_col(fila, nombre_columna, valor, sheet = SHEET):
     else:
         raise ValueError(f"Columna '{nombre_columna}' no encontrada en la hoja.")
 
-FIELD_MAPPING = {
-        "Nombre": "nombre",
-        "Apellido": "apellido",
-        "DNI": "dni",
-        "Email": "email",
-        "Celular": "celular",
-        "Domicilio": "domicilio",
-        "Localidad" : "localidad",
-        "Fecha de Nacimiento": "fecha-nacimiento",
-        "Nivel educativo terciario": "nivel-terciario",
-        "Nivel educativo universitario": "nivel-universitario",
-        "Tipo contrato": "tipo-contrato",
-        "CBU": "cbu",
-        "ALIAS": "alias",
-        "CUIL": "cuil",
-        "Banco": "banco",
-        "Numero de cuenta": "numero-cuenta",
-        "Bank name": "bank-name",
-        "Bank address": "bank-address",
-        "Swift code": "swift-code",
-        "Account holder": "account-holder",
-        "Holder address": "holder-address",
-        "Account number": "account-number",
-        "Routing number": "routing-number",
-        "Tipo de cuenta": "tipo-cuenta",
-        "Zip code": "zip-code",
-        "Obra social": "obra-social",
-        "Codigo AFIP": "codigo-afip",
-        "DNI frente": "dni-frente",
-        "DNI dorso": "deni-dorso"
+FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los valores los nombres de las variables que vienen del formulario
+    "Nombre": "nombre",
+    "Apellido": "apellido",
+    "DNI": "dni",
+    "Email": "email",
+    "Celular": "celular",
+    "Domicilio": "domicilio",
+    "Localidad" : "localidad",
+    "Fecha de Nacimiento": "fecha_nacimiento", 
+    "Nivel educativo terciario": "nivel_terciario", 
+    "Nivel educativo universitario": "nivel_universitario", 
+    "Tipo contrato": "tipo_contrato", 
+    "CBU": "cbu",
+    "ALIAS": "alias",
+    "CUIL": "cuil",
+    "Banco": "banco",
+    "Numero de cuenta": "numero_cuenta", 
+    "Bank name": "bank_name", 
+    "Bank address": "bank_address", 
+    "Swift code": "swift_code", 
+    "Account holder": "account_holder", 
+    "Account number": "account_number", 
+    "Routing number": "routing_number", 
+    "Tipo de cuenta": "tipo_cuenta", 
+    "Zip code": "zip_code", 
+    "Obra social": "obra_social", 
+    "Codigo AFIP": "codigo_afip", 
+    "DNI frente": "dni_frente", 
+    "DNI dorso": "dni_dorso" 
 }
 
 def cargar_sheets(data_json):
@@ -85,7 +85,7 @@ def cargar_sheets(data_json):
     try:
         result = SHEET.append_row(row_to_append, value_input_option='USER_ENTERED', insert_data_option='INSERT_ROWS')
         range_str = result['updates']['updatedRange'].split('!')[1]
-        fila = int(''.join(filter(str.isdigit, range_str)))
+        fila = int(re.findall(r'\d+', range_str)[0])
         logging.info(f"Datos del formulario añadidos a la fila {fila} en Google Sheets.")
         return fila
     except Exception as e:

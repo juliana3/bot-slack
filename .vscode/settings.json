@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "db-app-prueba.c7cy6qssie11.sa-east-1.rds.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "username": "admin_prueba",
+            "password": "database_prueba",
+            "database": "ingresantes_db",
+            "name": "prueba_conexion"
+        }
+    ]
+}

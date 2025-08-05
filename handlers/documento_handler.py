@@ -9,7 +9,7 @@ from services.db_operations import actualizar_estado
 
 
 
-def procesar_documento(datos, session):
+def procesar_documento(datos):
     logging.info(f"procesar_documento: Iniciando procesamiento para ID BD: {datos.get('document_id_db')}")
     
     document_id_db = datos.get("document_id_db")
@@ -32,7 +32,7 @@ def procesar_documento(datos, session):
 
         if not pdf_dni:
             logging.error(f"No se pudo generar el pdf para {nombre} {apellido}")
-            actualizar_estado(document_id_db, "estado_pdf", "Error", session)
+            actualizar_estado(document_id_db, "estado_pdf", "Error")
             return {"error": "Falló la generación del PDF", "status_code": 500}
         logging.info(f"PDF de {nombre} {apellido} generado correctamente")
 
@@ -45,18 +45,18 @@ def procesar_documento(datos, session):
             notificar_rrhh(nombre, apellido,email,"documento")
 
             #Actualizar sheets
-            actualizar_estado(document_id_db,"estado_pdf", "Subido", session)
+            actualizar_estado(document_id_db,"estado_pdf", "Subido")
             return {"mensaje": "Documento subido con éxito", "status_code": 200}
         else:
             logging.error("Falló la subida del PDF de %s a PeopleForce", nombre)
 
             #modificar sheets
-            actualizar_estado(document_id_db,"estado_pdf", "Error", session)
+            actualizar_estado(document_id_db,"estado_pdf", "Error")
             return {"error": "Falló la subida a PeopleForce", "status_code": 502}
     except Exception as e:
         logging.error(f"procesar_documento: Excepción inesperada al procesar documento para ID BD: {document_id_db}: {str(e)}", exc_info=True)
 
-        actualizar_estado(document_id_db,"estado_pdf", "Error", session)
+        actualizar_estado(document_id_db,"estado_pdf", "Error")
         return {"error": f"Excepción en el procesamiento del documento: {str(e)}", "status_code": 500}
 
 

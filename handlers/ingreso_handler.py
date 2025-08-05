@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import logging
 import time
 
-from services.database_config import Session, Ingresante
+from services.db_operations import guardar_ingresante, actualizar_estado
 from services.sheets_utils import SHEET, get_col, cargar_sheets
 from services.slack_utils import notificar_rrhh
 from services.payload_utils import payloadALTA
@@ -27,7 +27,7 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos, session):
+def procesar_ingreso(datos):
 
     dni_frente_s3 = datos.get("dni-frente","")
     dni_dorso_s3 = datos.get("dni-dorso","")
@@ -42,7 +42,7 @@ def procesar_ingreso(datos, session):
     
     #Guardar los datos iniciales en la Base de Datos
     logging.info("Intentando guardar datos iniciales en PostgreSQL...")
-    ingresante_id_db = guardar_ingresante(datos, session)
+    ingresante_id_db = guardar_ingresante(datos)
     if ingresante_id_db is None:
         logging.error("Falló la escritura inicial en PostgreSQL")
         return {"error": "Error al guardar datos en la base de datos princcipal", "status": "failed", "status_code": 500}
@@ -60,7 +60,7 @@ def procesar_ingreso(datos, session):
         if response.status_code in [200, 201]:
             logging.info(f"Alta OK para ingresante ID DB: {ingresante_id_db} | response: {response.json()}")
             #actualizar estado_alta en la BD
-            actualizar_estado(ingresante_id_db, "estado_alta", "Procesada", session)
+            actualizar_estado(ingresante_id_db, "estado_alta", "Procesada")
 
             #Notifica a rrhh por slack
             notificar_rrhh(payload["first_name"], payload["last_name"],payload["personal_email"], "alta")
@@ -69,7 +69,7 @@ def procesar_ingreso(datos, session):
             #capturar el ID de la persona creada
             employee_id = response.json().get("id") #verificar con que clave devuelve PF el json
             if employee_id:
-                actualizar_estado(ingresante_id_db, "id_pf", employee_id, session)
+                actualizar_estado(ingresante_id_db, "id_pf", employee_id)
 
                 #armar el dict para procesar documento
                 payload_doc = {
@@ -86,7 +86,7 @@ def procesar_ingreso(datos, session):
                     time.sleep(5) # Pausa de 5 segundos, ajustar si es necesario.
                     
                     logging.info(f"Flask: Llamando a procesar_documento para fila ingresante ID BD: {ingresante_id_db}")
-                    resultado_doc = procesar_documento(payload_doc, session)
+                    resultado_doc = procesar_documento(payload_doc)
 
                     if resultado_doc.get("status_code") in [200,201]:
                         logging.info(f"Flask: Documento procesado y subido correctamente para ingresante ID BD: {ingresante_id_db}")
@@ -100,18 +100,18 @@ def procesar_ingreso(datos, session):
 
                     return {"status": "failed", "message": "persona agregada pero documento falló.", "error": str(e)}
 
-            #si no obtuvo el ID
+            #si no obtuvo el ID de PF
             return {"mensaje": "Alta OK pero ID no obtenido", "status": "partial_success"}
         else:
             logging.error(f"Alta ERROR para ingresante ID BD: {ingresante_id_db} | {response.text}")
-            actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
+            actualizar_estado(ingresante_id_db, "estado_alta", "Error")
             return {"error": "API error", "status": "failed"}
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Excepción en solicitud a People Force para ingresante ID DB: {ingresante_id_db} | {str(e)}")
-        actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
+        actualizar_estado(ingresante_id_db, "estado_alta", "Error")
         return {"error": "Conexíon con PeopleForce fallida", "status": "failed", "status_code": 500}
     except Exception as e:
         logging.error(f"Excepción para ingresante ID BD: {ingresante_id_db} | {str(e)}" )
-        actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
+        actualizar_estado(ingresante_id_db, "estado_alta", "Error")
         return {"error": "Error interno", "status": "failed", "status_code": 500}
