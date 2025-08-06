@@ -20,7 +20,7 @@
       <img src="../static/img/fondo.png" alt="Portada Crombie!" class="img" />
     </div> 
 
-    <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona">     
+    <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona" id="miFormulario">     
       <h2>Ingreso Personal - Datos</h2>
       <h4>¡Bienvenid@ a Crombie! 🙋‍♀️</h4>
         <p>
@@ -39,14 +39,14 @@
         <label for="apellido">Apellido:</label>
         <input type="text" id="apellido" name="apellido" required />
 
-        <label for="dni">DNI o N° de Cédula:</label>
+        <label for="dni">DNI:</label>
         <input type="text" id="dni" name="dni" required/>
 
         <label for="dni-frente">Foto del DNI (frente):</label>
-        <input type="file" id="dni-frente" name="dni-frente" accept="image/*" />
+        <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
 
         <label for="dni-dorso">Foto del DNI (dorso):</label>
-        <input type="file" id="dni-dorso" name="dni-dorso" accept="image/*" />
+        <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
 
         <label for="email">Email personal:</label>
         <input type="email" id="email" name="email" required />
@@ -61,13 +61,13 @@
         <input type="tel" id="celular" name="celular" required />
 
         <label for="fecha-nacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fecha_nacimiento" name="fecha-nacimiento" />
+        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" />
 
         <label for="nivel-terciario">Nivel Educativo Terciario:</label>
-        <input type="text" id="nivel_terciario" name="nivel-terciario" />
+        <input type="text" id="nivel_terciario" name="nivel_terciario" />
 
         <label for="nivel-universitario">Nivel Educativo Universitario:</label>
-        <input type="text" id="nivel_universitario" name="nivel-universitario" />
+        <input type="text" id="nivel_universitario" name="nivel_universitario" />
       </div>
 
       <!-- 🔹 Tipo de contrato -->
@@ -82,29 +82,29 @@
       </div>
 
       <!-- Campo oculto para tipo de banco -->
-      <input type="hidden" id="tipo-banco" name="tipo-banco" />
+      <input type="hidden" id="tipo_banco" name="tipo_banco" />
 
       <!-- 🔹 Sección 2: Datos Bancarios Internacionales -->
       <div class="form-section" id="bancario-internacional" style="display: none">
         <label for="bank-name">Bank Name:</label>
-        <input type="text" id="bank_name" name="bank-name" />
+        <input type="text" id="bank_name" name="bank_name" />
 
         <label for="bank-address">Bank Address:</label>
-        <input type="text" id="bank_address" name="bank-address" />
+        <input type="text" id="bank_address" name="bank_address" />
         <label for="swift-code">Bank SWIFT Code:</label>
-        <input type="text" id="swift_code" name="swift-code" />
+        <input type="text" id="swift_code" name="swift_code" />
 
         <label for="account-holder">Account Holder:</label>
-        <input type="text" id="account_holder" name="account-holder" />
+        <input type="text" id="account_holder" name="account_holder" />
 
         <label for="holder-address">Holder Address:</label>
-        <input type="text" id="holder_address" name="holder-address" />
+        <input type="text" id="holder_address" name="holder_address" />
 
         <label for="account-number">Account Number:</label>
-        <input type="text" id="account_number" name="account-number" />
+        <input type="text" id="account_number" name="account_number" />
 
         <label for="routing-number">Routing Number:</label>
-        <input type="text" id="routing_number" name="routing-number" />
+        <input type="text" id="routing_number" name="routing_number" />
 
         <label for="tipo-cuenta">Tipo de cuenta:</label>
         <select id="tipo-cuenta" name="tipo-cuenta">
@@ -134,7 +134,7 @@
         <input type="text" id="obra_social" name="obra-social" />
 
         <label for="codigo-afip">Código de identificación de la Obra Social en AFIP:</label>
-        <input type="text" id="codigo_afip" name="codigo-afip" />
+        <input type="text" id="codigo_afip" name="codigo_afip" />
       </div>
 
       <button type="submit">Enviar formulario</button>
