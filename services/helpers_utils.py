@@ -1,6 +1,7 @@
 import re
 import logging
 import phonenumbers
+import datetime
 
 #congifuracion del logging
 logging.basicConfig(
@@ -91,3 +92,24 @@ def validar_account_number(account_number, min_length=4, max_length=20):
     if not re.fullmatch(r'^\d{'+str(min_length)+','+str(max_length)+'}$', account_number_cleaned):
         return False, f"El número de cuenta debe contener solo dígitos y tener entre {min_length} y {max_length} caracteres."
     return True, ""
+
+
+#FUNCIONES PARA HACER LA CONVERSION DE TIPOS PARA MANDAR EL PAYLOAD A PF+
+def convertir_a_int(dato):
+    dato_limpio = "".join(filter(str.isdigit, dato))
+    dato_int = None
+    if dato_limpio:
+        try:
+            dato_int = int(dato_limpio)
+        except ValueError:
+                # En caso de que el string no sea un número válido
+                logging.error(f"El valor '{dato}' no se puede convertir a número.")
+
+
+def formatear_fecha(fecha):
+    try:
+        fecha_objeto = datetime.datetime.strptime(fecha, '%d-%m-%Y')
+        return fecha_objeto.strftime('%Y-%m-%d')
+    except (ValueError, TypeError) as e:
+        logging.error(f"Error al convertir la fecha: {fecha}. Error: {e}")
+        return None
