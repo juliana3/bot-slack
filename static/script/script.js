@@ -1,49 +1,209 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById('miFormulario');
   const tipoContrato = document.getElementById("tipo-contrato");
-  const tipoBanco = document.getElementById("tipo-banco");
-
+  const tipoBancoHidden = document.getElementById("tipo-banco");
   const seccionNacional = document.getElementById("bancario-nacional");
   const seccionInternacional = document.getElementById("bancario-internacional");
 
-  // Manejo de visibilidad según tipo de contrato
-  tipoContrato.addEventListener("change", () => {
-    const valor = tipoContrato.value;
+  const inputCelular = document.getElementById("celular");
+  const inputCBU = document.getElementById("cbu");
+  const inputDNI = document.getElementById("dni");
+  const nombreInput = document.getElementById("nombre");
+  const apellidoInput = document.getElementById("apellido");
+  const domicilioInput = document.getElementById("domicilio");
+  const localidadInput = document.getElementById("localidad");
+  // Javascript antiguo funcionando 
+  // Capitalizar cada palabra
+  function capitalizarCadaPalabra(texto) {
+    return texto
+      .trim()
+      .toLowerCase()
+      .split(' ')
+      .filter(p => p !== '')
+      .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+      .join(' ');
+  }
 
-    if (valor === "contractor") {
-      // Contractor habilita solo transferencia extranjera y oculta nacional
-      seccionInternacional.style.display = "block";
-      seccionNacional.style.display = "none";
+  // --- Lógica Celular ---
+  if (inputCelular) {
+    const iti = intlTelInput(inputCelular, {
+      initialCountry: "auto",
+      geoIpLookup: callback => {
+        fetch("https://ipapi.co/json/")
+          .then(res => res.json())
+          .then(data => callback(data.country_code))
+          .catch(() => callback("us"));
+      },
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+      preferredCountries: ["ar", "us", "br", "cl", "mx"],
+      separateDialCode: true,
+    });
 
-      // También, deshabilitamos selector tipo banco porque no se necesita elegir nacional/internacional
-      tipoBanco.value = "";
-      tipoBanco.disabled = true;
-    } else if (valor === "rrdd" || valor === "monotributo") {
-      // RRDD o Monotributo habilitan transferencia nacional y selector tipo banco
-      seccionInternacional.style.display = "none";
-      seccionNacional.style.display = "block";
+    inputCelular.addEventListener('keydown', (e) => {
+      if (!((e.key >= '0' && e.key <= '9') ||
+            e.key === 'Backspace' || e.key === 'Delete' ||
+            e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+            e.key === 'Tab' ||
+            (e.ctrlKey || e.metaKey) && (['a','c','v','x'].includes(e.key)) ||
+            (e.key === '+' && !iti.options.separateDialCode && inputCelular.selectionStart === 0))) {
+        e.preventDefault();
+      }
+    });
 
-      tipoBanco.disabled = false;
-    } else {
-      // Si no selecciona nada
-      seccionInternacional.style.display = "none";
-      seccionNacional.style.display = "none";
-      tipoBanco.disabled = false;
-    }
-  });
+    inputCelular.addEventListener('input', () => {
+      let val = inputCelular.value;
+      const curPos = inputCelular.selectionStart;
 
-  // Manejo de visibilidad según tipo de banco (solo si el selector está habilitado)
-  tipoBanco.addEventListener("change", () => {
-    if (tipoBanco.disabled) return; // Ignorar cambios si está deshabilitado
+      let newVal = iti.options.separateDialCode
+        ? val.replace(/[^0-9]/g, '')
+        : val.replace(/[^0-9+]/g, '');
 
-    if (tipoBanco.value === "nacional") {
-      seccionNacional.style.display = "block";
-      seccionInternacional.style.display = "none";
-    } else if (tipoBanco.value === "internacional") {
-      seccionInternacional.style.display = "block";
-      seccionNacional.style.display = "none";
-    } else {
-      seccionInternacional.style.display = "none";
-      seccionNacional.style.display = "none";
-    }
-  });
+      if (!iti.options.separateDialCode) {
+        if (newVal.includes('+') && newVal.indexOf('+') !== 0)
+          newVal = newVal.replace(/\+/g, '');
+        if (newVal.length > 1 && newVal.charAt(0) === '+' && newVal.substring(1).includes('+'))
+          newVal = '+' + newVal.substring(1).replace(/\+/g, '');
+      }
+
+      if (val !== newVal) {
+        inputCelular.value = newVal;
+        const newPos = curPos - (val.length - newVal.length);
+        inputCelular.setSelectionRange(newPos, newPos);
+      }
+    });
+
+    inputCelular.addEventListener('blur', () => {
+      if (iti.isValidNumber()) {
+        console.log("Número válido:", iti.getNumber());
+      } else {
+        console.log("Número inválido");
+      }
+    });
+  }
+
+  // --- Lógica CBU ---
+  if (inputCBU) {
+    inputCBU.addEventListener('keydown', (e) => {
+      if (!((e.key >= '0' && e.key <= '9') ||
+            e.key === 'Backspace' || e.key === 'Delete' ||
+            e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+            e.key === 'Tab' ||
+            (e.ctrlKey || e.metaKey) && ['a','c','v','x'].includes(e.key))) {
+        e.preventDefault();
+      }
+    });
+
+    inputCBU.addEventListener('input', () => {
+      const curPos = inputCBU.selectionStart;
+      const original = inputCBU.value;
+      let nuevo = original.replace(/[^0-9]/g, '');
+
+      if (nuevo.length > 22) {
+        nuevo = nuevo.slice(0, 22);
+      }
+
+      if (original !== nuevo) {
+        inputCBU.value = nuevo;
+        const newPos = curPos - (original.length - nuevo.length);
+        inputCBU.setSelectionRange(newPos, newPos);
+      }
+    });
+
+    inputCBU.addEventListener('blur', () => {
+      if (inputCBU.value.length > 0 && inputCBU.value.length !== 22) {
+        inputCBU.setCustomValidity("El CBU debe tener exactamente 22 números.");
+        inputCBU.reportValidity();
+      } else {
+        inputCBU.setCustomValidity("");
+      }
+    });
+  }
+
+  // --- Lógica DNI ---
+  if (inputDNI) {
+    inputDNI.addEventListener('input', () => {
+      inputDNI.value = inputDNI.value.replace(/\D/g, '').slice(0, 8);
+    });
+  }
+
+  // --- Lógica tipo contrato ---
+  if (tipoContrato) {
+    tipoContrato.addEventListener("change", () => {
+      const valor = tipoContrato.value;
+
+      if (valor === "contractor") {
+        seccionInternacional.style.display = "block";
+        seccionNacional.style.display = "none";
+        tipoBancoHidden.value = "internacional";
+      } else if (["rrdd", "monotributo"].includes(valor)) {
+        seccionInternacional.style.display = "none";
+        seccionNacional.style.display = "block";
+        tipoBancoHidden.value = "nacional";
+      } else {
+        seccionInternacional.style.display = "none";
+        seccionNacional.style.display = "none";
+        tipoBancoHidden.value = "";
+      }
+    });
+  }
+
+  // --- Lógica submit: Validaciones y capitalización ---
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Validar DNI
+      const dniValor = inputDNI.value;
+      if (!/^\d{8}$/.test(dniValor)) {
+        e.preventDefault();
+        alert("El DNI debe tener exactamente 8 números.");
+        return;
+      }
+
+      // Capitalizar campos
+      if (nombreInput) nombreInput.value = capitalizarCadaPalabra(nombreInput.value);
+      if (apellidoInput) apellidoInput.value = capitalizarCadaPalabra(apellidoInput.value);
+      if (domicilioInput) domicilioInput.value = capitalizarCadaPalabra(domicilioInput.value);
+      if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
+
+      const formData = new FormData(form);
+      const data = {};
+      for (let [key, value] of formData.entries()) {
+        // Si el valor es un archivo, de momento lo ignoramos
+        // ya que tu backend espera solo JSON (sin archivos).
+        // Más adelante, podemos adaptarlo para manejar archivos.
+        if (typeof value !== 'object') {
+          data[key] = value;
+        }
+      }
+
+      console.log("Enviando datos en JSON:", data);
+
+      fetch('/agregar_persona', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+          }
+          return response.json();
+          })
+          .then(result => {
+            console.log('Respuesta del servidor:', result);
+            alert("Formulario enviado correctamente!");
+                // Aquí puedes redirigir al usuario o mostrar un mensaje de éxito
+            window.location.href = '/agradecimiento.html';
+          })
+          .catch(error => {
+            console.error('Error al enviar el formulario:', error);
+            alert("Hubo un error al enviar el formulario. Intenta de nuevo");
+          });
+
+    });
+  }
+
 });
+

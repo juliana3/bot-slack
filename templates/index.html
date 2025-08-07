@@ -2,9 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Crombie Form</title>
-  <link rel="stylesheet" href="../static/styles/styles.css" />
+  <title>Formulario Crombie</title>
+  <link rel="stylesheet" href="../static/styles/styles.css"/>
   <link rel="icon" type="image/x-icon" href="../static/img/Logo.png" />
+  <link rel="stylesheet" href="../static/styles/vendor/intlTelInput.min.css"/>
   <!-- CSS de intl-tel-input -->
   <link
     rel="stylesheet"
@@ -12,28 +13,24 @@
   />
 </head>
 <body>
+
   <main class="main">
+
     <div class="header">
       <img src="../static/img/fondo.png" alt="Portada Crombie!" class="img" />
-    </div>
+    </div> 
 
-    <form
-      class="form-container"
-      method="POST"
-      enctype="multipart/form-data"
-      action="https://tubackend.com/api/ingreso"
-    >
+    <form class="form-container"  id="miFormulario">     
       <h2>Ingreso Personal - Datos</h2>
       <h4>¡Bienvenid@ a Crombie! 🙋‍♀️</h4>
-      <p>
-        Estamos muy felices de que te sumes a este equipo. Para poder darte de
-        alta en nuestro sistema y asegurarnos de que todo esté en orden para tu
-        ingreso, necesitamos que completes algunos datos personales. Tu
-        información es muy importante para nosotros y será tratada con total
-        confidencialidad y cuidado. ¡Gracias por tomarte unos minutos para
-        completarlo!
-      </p>
-
+        <p>
+          Estamos muy felices de que te sumes a este equipo. Para poder darte de
+          alta en nuestro sistema y asegurarnos de que todo esté en orden para tu
+          ingreso, necesitamos que completes algunos datos personales. Tu
+          información es muy importante para nosotros y será tratada con total
+          confidencialidad y cuidado. ¡Gracias por tomarte unos minutos para
+          completarlo!
+        </p>       
       <!-- 🔹 Sección 1: Datos Personales -->
       <div class="form-section">
         <label for="nombre">Nombre:</label>
@@ -42,21 +39,14 @@
         <label for="apellido">Apellido:</label>
         <input type="text" id="apellido" name="apellido" required />
 
-        <label for="dni">DNI o N° de Cédula:</label>
-        <input
-          type="text"
-          id="dni"
-          name="dni"
-          required
-          pattern="\d{7,9}"
-          title="Solo números, entre 7 y 9 dígitos"
-        />
+        <label for="dni">DNI:</label>
+        <input type="text" id="dni" name="dni" required/>
 
         <label for="dni-frente">Foto del DNI (frente):</label>
-        <input type="file" id="dni-frente" name="dni-frente" accept="image/*" />
+        <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
 
         <label for="dni-dorso">Foto del DNI (dorso):</label>
-        <input type="file" id="dni-dorso" name="dni-dorso" accept="image/*" />
+        <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
 
         <label for="email">Email personal:</label>
         <input type="email" id="email" name="email" required />
@@ -68,105 +58,86 @@
         <input type="text" id="localidad" name="localidad" />
 
         <label for="celular">Celular:</label>
-        <input type="tel" id="celular" name="celular" required/>
+        <input type="tel" id="celular" name="celular" required />
 
         <label for="fecha-nacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" />
+        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" />
 
-        <label for="nivel-terciario">Nivel Educativo Terciario:</label>
-        <input type="text" id="nivel-terciario" name="nivel-terciario" />
-
-        <label for="nivel-universitario">Nivel Educativo Universitario:</label>
-        <input type="text" id="nivel-universitario" name="nivel-universitario" />
-      </div>
-
-      <!-- Tipo de Contrato -->
-      <label for="tipo-contrato">Tipo de Contrato:</label>
-      <select id="tipo-contrato" name="tipo-contrato" required>
-        <option value="" disabled selected>Seleccione una opción</option>
-        <option value="contractor">Contractor</option>
-        <option value="rrdd">Relación de Dependencia</option>
-        <option value="monotributo">Monotributo</option>
-      </select>
-
-      <!-- Tipo de Banco -->
+      <!-- 🔹 Tipo de contrato -->
       <div class="form-section">
-        <label for="tipo-banco">¿Tipo de banco?</label>
-        <select id="tipo-banco" name="tipo-banco" required>
+        <label for="tipo-contrato">Tipo de Contrato:</label>
+        <select id="tipo-contrato" name="tipo-contrato" required>
           <option value="">Seleccioná una opción</option>
-          <option value="nacional">Banco Nacional</option>
-          <option value="internacional">Banco Internacional</option>
+          <option value="rrdd">Relación de Dependencia</option>
+          <option value="monotributo">Monotributo</option>
+          <option value="contractor">Contractor</option>
         </select>
       </div>
 
+      <!-- Campo oculto para tipo de banco -->
+      <input type="hidden" id="tipo_banco" name="tipo_banco" />
+
       <!-- 🔹 Sección 2: Datos Bancarios Internacionales -->
-      <div
-        class="form-section"
-        id="bancario-internacional"
-        style="display: none"
-      >
+      <div class="form-section" id="bancario-internacional" style="display: none">
         <label for="bank-name">Bank Name:</label>
-        <input type="text" id="bank-name" name="bank-name" />
+        <input type="text" id="bank_name" name="bank_name" />
 
         <label for="bank-address">Bank Address:</label>
-        <input type="text" id="bank-address" name="bank-address" />
-
+        <input type="text" id="bank_address" name="bank_address" />
         <label for="swift-code">Bank SWIFT Code:</label>
-        <input type="text" id="swift-code" name="swift-code" />
+        <input type="text" id="swift_code" name="swift_code" />
 
         <label for="account-holder">Account Holder:</label>
-        <input type="text" id="account-holder" name="account-holder" />
-
-        <label for="holder-address">Holder Address:</label>
-        <input type="text" id="holder-address" name="holder-address" />
+        <input type="text" id="account_holder" name="account_holder" />
 
         <label for="account-number">Account Number:</label>
-        <input type="text" id="account-number" name="account-number" />
+        <input type="text" id="account_number" name="account_number" />
 
         <label for="routing-number">Routing Number:</label>
-        <input type="text" id="routing-number" name="routing-number" />
+        <input type="text" id="routing_number" name="routing_number" />
 
         <label for="tipo-cuenta">Tipo de cuenta:</label>
         <select id="tipo-cuenta" name="tipo-cuenta">
+          <option value ="">Selecciona una opción</option>
           <option value="saving">Saving</option>
           <option value="checking">Checking</option>
         </select>
 
         <label for="zip">ZIP Code (Código Postal):</label>
-        <input type="text" id="zip" name="zip-code" />
+        <input type="text" id="zip_code" name="zip" />
       </div>
 
-      <!-- 🔹 Sección 3: Datos Bancarios Locales y Obra Social -->
+      <!-- 🔹 Sección 3: Datos Bancarios Nacionales -->
       <div class="form-section" id="bancario-nacional" style="display: none">
         <label for="banco">Banco:</label>
         <input type="text" id="banco" name="banco" />
 
         <label for="cuenta">Nº Cuenta:</label>
-        <input type="text" id="cuenta" name="numero-cuenta" />
+        <input type="text" id="numero_cuenta" name="cuenta" />
 
-        <label for="cbu" title="CBU debe tener 22 números">
-          CBU:
-        </label>
+        <label for="cbu" title="CBU debe tener 22 números">CBU:</label>
         <input type="text" id="cbu" name="cbu" pattern="\d{22}" />
 
         <label for="alias">ALIAS:</label>
         <input type="text" id="alias" name="alias" />
 
-        <label for="cuil">CUIL</label>
-        <input type="text" id="cuil" name="cuil"/>
-
         <label for="obra-social">Nombre de la obra social/prepaga:</label>
-        <input type="text" id="obra-social" name="obra-social" />
+        <input type="text" id="obra_social" name="obra-social" />
 
         <label for="codigo-afip">Código de identificación de la Obra Social en AFIP:</label>
-        <input type="text" id="codigo-afip" name="codigo-afip" />
+        <input type="text" id="codigo_afip" name="codigo_afip" />
       </div>
 
       <button type="submit">Enviar formulario</button>
     </form>
   </main>
+  <div id="mensajeAgradecimiento" class="mensaje-agradecimiento" style="display:none;">
+    <h2>¡Gracias por completar el formulario! 🎉</h2>
+    <p>Tu información ha sido enviada correctamente. Si necesitas modificar algo, contacta al área de RRHH.</p>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
   <script src="../static/script/script.js"></script>
 </body>
 </html>
