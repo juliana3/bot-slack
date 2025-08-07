@@ -1,10 +1,16 @@
-import  time, logging
+import  time, logging, os
+from dotenv import load_dotenv
+import requests
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.documento_handler import procesar_documento
-from services.db_operations import obtener_ingresante_por_estado, obtener_ingresante_por_id
+from services.db_operations import actualizar_estado, obtener_ingresante_por_estado, obtener_ingresante_por_id
+from services.payload_utils import payloadALTA
+from services.slack_utils import notificar_rrhh
 
 
+API_TOKEN = os.getenv("PEOPLEFORCE_TOKEN")
+API_URL= os.getenv("PEOPLEFORCE_URL")
 
 def reprocesar_filas():
     logging.info("Iniciando reproceso de registros en PostgreSQL")
@@ -26,48 +32,39 @@ def reprocesar_filas():
 
             estado_alta_db = ingresante.get('estado_alta', '').strip().lower()
             estado_pdf_db = ingresante.get('estado_pdf', '').strip().lower()
-            datos_ingreso = ingresante
 
-            if estado_alta_db in ["error","pendiente",""]:
+            if estado_alta_db in ["error", "pendiente", ""]:
                 logging.info(f"Reintentando alta de registro DB ID: {ingresante_id_db} en PeopleForce.")
 
-                #reprocesar ingreso
-                resultado_alta = procesar_ingreso(datos_ingreso)
-                if resultado_alta.get("status") == "succes" or resultado_alta.get("status") == "partial_success":
-                    logging.info(f"Alta del registro DB ID: {ingresante_id_db} reprocesada correctamente")
-                    f_procesadas +=1
+                #Se genera el payload con los datos que ya existen en la BD
+                payload = payloadALTA(ingresante)
+                headers = {
+                    "Authorization": f"Bearer {API_TOKEN}",
+                    "Content-Type": "application/json"
+                }
 
-                    ingresante_actualizado = obtener_ingresante_por_id(ingresante_id_db)
-                    employee_id_actualizado= ingresante_actualizado.get('id_pf') if ingresante_actualizado else None
+                try:
+                    response = requests.post(API_URL, headers=headers, json=payload)
+                    if response.status_code in [200, 201]:
+                        logging.info(f"Alta OK para ingresante ID DB: {ingresante_id_db} | response: {response.json()}")
+                        actualizar_estado(ingresante_id_db, "estado_alta", "Procesada")
+                        notificar_rrhh(ingresante.get("nombre"), ingresante.get("apellido"), ingresante.get("email"),"alta")
+                        employee_id = response.json().get("id")
+                        if employee_id:
+                            actualizar_estado(ingresante_id_db, "id_pf", employee_id)
+                        f_procesadas += 1
+                    else:
+                        logging.error(f"Alta ERROR para ingresante ID DB: {ingresante_id_db} | {response.text}")
+                        f_errores += 1
+                except requests.exceptions.RequestException as e:
+                    logging.error(f"Excepción en solicitud a PeopleForce para ID DB: {ingresante_id_db} | {str(e)}")
+                    f_errores += 1
 
-                    #si estado_alta esta ok pero estado_pdf no
-                    if estado_pdf_db in ["error","pendiente",""] and employee_id_actualizado:
-                        logging.info(f"Intentando subir PDF de BD ID: {ingresante_id_db}.")
-                        datos_doc = {
-                            "document_id_db": ingresante_id_db,
-                            "employee_id": employee_id_actualizado,
-                            "nombre": ingresante.get('nombre'),
-                            "apellido": ingresante.get('apellido'),
-                            "email": ingresante.get('email'),
-                            "dni_f": ingresante.get('dni_frente'),
-                            "dni_d": ingresante.get('dni_dorso'),
-                        }
-
-                        #procesar documento
-                        resultado_doc = procesar_documento(datos_doc)
-                        if resultado_doc.get("status_code") in [200, 201]:
-                            logging.info(f"PDF de DB ID: {ingresante_id_db} subido correctamente a PeopleForce")
-                        else:
-                            logging.error(f"Error al subir PDF de DB ID: {ingresante_id_db}: {resultado_doc.get('error', 'Error desconocido')}")
-                            f_errores +=1
-                    elif not employee_id_actualizado:
-                        logging.warning(f"No se pudo reintentar PDF para DB ID: {ingresante_id_db} porque no se obtuvo employee_id")
-                else:
-                    logging.error(f"Error al reprocesar alta en PeopleForce para el registro DB ID: {ingresante_id_db}: {resultado_alta.get('error', 'Error desconocido')}")
-                    f_errores +=1
-            elif estado_alta_db == "procesada" and estado_pdf_db in ["pendiente","error",""]:
-                logging.info(f"Reintentando subir PDF para DB ID: {ingresante_id_db}")
-
+            
+                
+            #si estado_alta esta ok pero estado_pdf no
+            if estado_alta_db == "procesada" and estado_pdf_db in ["error","pendiente",""]:
+                logging.info(f"Intentando subir PDF de BD ID: {ingresante_id_db}.")
                 datos_doc = {
                     "document_id_db": ingresante_id_db,
                     "employee_id": ingresante.get('id_pf'),
@@ -77,14 +74,15 @@ def reprocesar_filas():
                     "dni_f": ingresante.get('dni_frente'),
                     "dni_d": ingresante.get('dni_dorso'),
                 }
-                resultado_doc = procesar_documento(datos_doc)
 
-                if resultado_doc.get("status_code") in [200,201]:
-                    logging.info(f"PDF de DB ID: {ingresante_id_db} subido correctamente aa PeopleForce")
-                    f_procesadas += 1
+                #procesar documento
+                resultado_doc = procesar_documento(datos_doc)
+                if resultado_doc.get("status_code") in [200, 201]:
+                    logging.info(f"PDF de DB ID: {ingresante_id_db} subido correctamente a PeopleForce")
                 else:
-                    logging.error(f"Error al subir PDF de DB ID: {ingresante_id_db} a PeopleForce")
-                    f_errores += 1
+                    logging.error(f"Error al subir PDF de DB ID: {ingresante_id_db}: {resultado_doc.get('error', 'Error desconocido')}")
+                    f_errores +=1
+                
 
             time.sleep(5)
 

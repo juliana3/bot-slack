@@ -13,16 +13,16 @@ FLASK_ENDPOINT = "http://localhost:4000/agregar_persona"
 # Es crucial que las claves (keys) de este diccionario coincidan
 # con los nombres de las columnas en tu tabla de ingresantes.
 payload = {
-    "nombre": "Juan",
-    "apellido": "Perez",
-    "dni": "12345679",
+    "nombre": "Juliana",
+    "apellido": "araujo",
+    "dni": "1284989",
     "dni_frente": "dni_frente/juan_perez_12345678_frente.png",
     "dni_dorso": "dni_dorso/juan_perez_12345678_dorso.png",
-    "email": "juana.perez@example.com",
+    "email": "juli@example.com",
     "domicilio": "Calle Falsa 123",
     "localidad": "Ciudad Autónoma de Buenos Aires",
     "celular": "+5491155554444",
-    "fecha_nacimiento": "1990-01-01",
+    "fecha_nacimiento": "25/02/2002",
     "tipo_contrato": "rrdd",
     "banco": "Banco Galicia",
     "numero_cuenta": "1234567890",

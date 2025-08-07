@@ -17,8 +17,8 @@ from handlers.documento_handler import procesar_documento
 
 load_dotenv()
 
-API_URL = os.getenv("PEOPLE_FORCE_URL") 
-API_TOKEN = os.getenv("PEOPLE_FORCE_TOKEN")
+API_URL = os.getenv("PEOPLEFORCE_URL") 
+API_TOKEN = os.getenv("PEOPLEFORCE_TOKEN")
 
 
 logging.basicConfig(
@@ -27,19 +27,21 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos):
+def procesar_ingreso(datos, es_reproceso = False):
 
     dni_frente_s3 = datos.get("dni-frente","")
     dni_dorso_s3 = datos.get("dni-dorso","")
     fila_sheets = None
 
-    #Guardar los datos iniciales en Sheets como respaldo
-    logging.info("Intentando añadir datos a Google Sheets..")
-    fila_sheets = cargar_sheets(datos)
-
-    if fila_sheets is None:
-        logging.error("Falló la escritura en Google Sheets. Continuando sin respaldo")
+    #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
+    if not es_reproceso:
+        logging.info("Intentando añadir datos a Google Sheets..")
+        fila_sheets = cargar_sheets(datos)
     
+
+        if fila_sheets is None:
+            logging.error("Falló la escritura en Google Sheets. Continuando sin respaldo")
+        
     #Guardar los datos iniciales en la Base de Datos
     logging.info("Intentando guardar datos iniciales en PostgreSQL...")
     ingresante_id_db = guardar_ingresante(datos)

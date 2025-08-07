@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2 import extras
 import logging
 import os
 from dotenv import load_dotenv
@@ -33,11 +34,11 @@ def guardar_ingresante(data_json):
                 INSERT INTO ingresantes (
                     nombre, apellido, dni, email, celular, domicilio, localidad, fecha_nacimiento,
                     nivel_terciario, nivel_universitario, obra_social, codigo_afip, cbu, alias,
-                    cuil, banco, numero_cuenta, bank_name, bank_address, swift_code, account_holder,
-                    holder_address, account_number, routing_number, tipo_cuenta, zip_code,
+                    cuil, banco, numero_cuenta, bank_name, bank_address, swift_code, account_holder, 
+                    account_number, routing_number, tipo_cuenta, zip_code,
                     tipo_contrato, dni_frente, dni_dorso, estado_alta, id_pf, estado_pdf
                 ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) RETURNING id;
             """
@@ -63,7 +64,6 @@ def guardar_ingresante(data_json):
                 data_json.get("bank-address", ""),  
                 data_json.get("swift-code", ""),     
                 data_json.get("account-holder", ""),  
-                data_json.get("holder-address", ""),  
                 data_json.get("account-number", ""),   
                 data_json.get("routing-number", ""),  
                 data_json.get("tipo-cuenta", ""),      
@@ -165,11 +165,11 @@ def obtener_ingresante_por_estado():
     
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            sql = "SELECT FROM ingresantes WHERE estado_alta IN %s OR estado_pdf IN %s;"
+            sql = "SELECT * FROM ingresantes WHERE estado_alta IN %s OR estado_pdf IN %s;"
 
             tupla_estados = tuple(estados)
 
-            cursor.execute(sql(tupla_estados, tupla_estados))
+            cursor.execute(sql,(tupla_estados, tupla_estados))
             ingresantes = cursor.fetchall()
 
             if ingresantes:
@@ -194,10 +194,10 @@ def obtener_ingresante_por_id(id_ingresante):
     
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            sql = "SELECT FROM ingresantes WHERE id = %s;"
+            sql = "SELECT * FROM ingresantes WHERE id = %s;"
 
 
-            cursor.execute(sql(id_ingresante,))
+            cursor.execute(sql,(id_ingresante,))
             ingresante = cursor.fetchone()
 
             if ingresante:

@@ -101,14 +101,18 @@ def convertir_a_int(dato):
     if dato_limpio:
         try:
             dato_int = int(dato_limpio)
+            return dato_int
         except ValueError:
                 # En caso de que el string no sea un número válido
                 logging.error(f"El valor '{dato}' no se puede convertir a número.")
 
 
 def formatear_fecha(fecha):
+    if fecha is None:
+        return None
+    
     try:
-        fecha_objeto = datetime.datetime.strptime(fecha, '%d-%m-%Y')
+        fecha_objeto = datetime.datetime.strptime(fecha, '%d/%m/%Y')
         return fecha_objeto.strftime('%Y-%m-%d')
     except (ValueError, TypeError) as e:
         logging.error(f"Error al convertir la fecha: {fecha}. Error: {e}")
