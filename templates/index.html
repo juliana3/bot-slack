@@ -63,13 +63,6 @@
         <label for="fecha-nacimiento">Fecha de Nacimiento:</label>
         <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" />
 
-        <label for="nivel-terciario">Nivel Educativo Terciario:</label>
-        <input type="text" id="nivel_terciario" name="nivel_terciario" />
-
-        <label for="nivel-universitario">Nivel Educativo Universitario:</label>
-        <input type="text" id="nivel_universitario" name="nivel_universitario" />
-      </div>
-
       <!-- 🔹 Tipo de contrato -->
       <div class="form-section">
         <label for="tipo-contrato">Tipo de Contrato:</label>
@@ -96,9 +89,6 @@
 
         <label for="account-holder">Account Holder:</label>
         <input type="text" id="account_holder" name="account_holder" />
-
-        <label for="holder-address">Holder Address:</label>
-        <input type="text" id="holder_address" name="holder_address" />
 
         <label for="account-number">Account Number:</label>
         <input type="text" id="account_number" name="account_number" />
@@ -140,9 +130,14 @@
       <button type="submit">Enviar formulario</button>
     </form>
   </main>
+  <div id="mensajeAgradecimiento" class="mensaje-agradecimiento" style="display:none;">
+    <h2>¡Gracias por completar el formulario! 🎉</h2>
+    <p>Tu información ha sido enviada correctamente. Si necesitas modificar algo, contacta al área de RRHH.</p>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
   <script src="../static/script/script.js"></script>
+  <script src="../static/script/formulario.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const apellidoInput = document.getElementById("apellido");
   const domicilioInput = document.getElementById("domicilio");
   const localidadInput = document.getElementById("localidad");
-
+  // Javascript antiguo funcionando 
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
     return texto
