@@ -16,7 +16,7 @@ def payloadALTA(datos):
         "código_obra_social" : datos.get("codigo_afip", ""),
     }
     
-    if datos.get("tipo_contrato") == "Relación de Dependencia" or datos.get("tipo_contrato") == "Monotributo":
+    if datos.get("tipo_contrato") == "rrdd" or datos.get("tipo_contrato") == "monotributo":
         if datos.get("localidad").lower() != "santa fe":
             #deposito y transferencia con los mismos datos
             payload.update({

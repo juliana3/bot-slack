@@ -107,6 +107,7 @@ def convertir_a_int(dato):
                 logging.error(f"El valor '{dato}' no se puede convertir a número.")
 
 
+#me parece que la fecha esta llegando con formato aaaa-mm-dd desde el formulario. HAY QUE ARREGLAR
 def formatear_fecha(fecha):
     if fecha is None:
         return None

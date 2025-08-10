@@ -36,9 +36,9 @@ def guardar_ingresante(data_json):
                     nivel_terciario, nivel_universitario, obra_social, codigo_afip, cbu, alias,
                     cuil, banco, numero_cuenta, bank_name, bank_address, swift_code, account_holder, 
                     account_number, routing_number, tipo_cuenta, zip_code,
-                    tipo_contrato, dni_frente, dni_dorso, estado_alta, id_pf, estado_pdf
+                    tipo_contrato, dni_frente, dni_dorso, estado_alta, id_pf, estado_pdf, id_carpeta_drive
                 ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) RETURNING id;
             """
@@ -73,7 +73,8 @@ def guardar_ingresante(data_json):
                 data_json.get("dni-dorso", ""),      
                 data_json.get("estado_alta", "Pendiente"),
                 data_json.get("id_pf", ""),
-                data_json.get("estado_pdf", "Pendiente")
+                data_json.get("estado_pdf", "Pendiente"),
+                data_json.get("id_carpeta_drive", "")
             )
 
             #ejecutar la consulta sql con los valores
@@ -208,6 +209,30 @@ def obtener_ingresante_por_id(id_ingresante):
     except Exception as e:
         logging.error(f"Error al obtener el ingresante con ID {id_ingresante}: {str(e)}", exc_info=True)
         return []
+    finally:
+        if conn:
+            conn.close()
+
+def obtener_id_carpeta_drive(id_ingresante):
+    conn = get_db_connection()
+    if conn is None:
+        return None
+    
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            sql = "SELECT id_carpeta_drive FROM ingresantes WHERE id = %s;"
+
+
+            cursor.execute(sql,(id_ingresante,))
+            id_carpeta = cursor.fetchone()
+
+            if id_carpeta:
+                logging.info(f"ID de carpeta drive para ingresante con ID {id_ingresante} encontrado")
+                return dict(id_carpeta)
+            else:
+                logging.warning(f"ID de carpeta drive para ingresante con ID {id_ingresante} no encontrado")
+    except Exception as e:
+        logging.error(f"Error al obtener el ID de la carpeta drive para el ingresante con ID {id_ingresante}: {str(e)}", exc_info=True)
     finally:
         if conn:
             conn.close()

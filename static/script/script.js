@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById('miFormulario');
   const tipoContrato = document.getElementById("tipo-contrato");
-  const tipoBancoHidden = document.getElementById("tipo-banco");
+  const tipoBancoHidden = document.getElementById("tipo_banco");
   const seccionNacional = document.getElementById("bancario-nacional");
   const seccionInternacional = document.getElementById("bancario-internacional");
 
@@ -166,41 +166,22 @@ document.addEventListener("DOMContentLoaded", () => {
       if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
 
       const formData = new FormData(form);
-      const data = {};
-      for (let [key, value] of formData.entries()) {
-        // Si el valor es un archivo, de momento lo ignoramos
-        // ya que tu backend espera solo JSON (sin archivos).
-        // Más adelante, podemos adaptarlo para manejar archivos.
-        if (typeof value !== 'object') {
-          data[key] = value;
-        }
-      }
-
-      console.log("Enviando datos en JSON:", data);
+     
+      console.log("Enviando datos con FormData:", formData);
 
       fetch('/agregar_persona', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
+        body: formData
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
-          }
-          return response.json();
-          })
-          .then(result => {
-            console.log('Respuesta del servidor:', result);
-            alert("Formulario enviado correctamente!");
-                // Aquí puedes redirigir al usuario o mostrar un mensaje de éxito
-            window.location.href = '/agradecimiento.html';
-          })
-          .catch(error => {
+        .catch(error => {
             console.error('Error al enviar el formulario:', error);
             alert("Hubo un error al enviar el formulario. Intenta de nuevo");
-          });
+      });
+          
+        
+      window.location.href = '/gracias';
+          
+          
 
     });
   }

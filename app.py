@@ -6,6 +6,7 @@ import logging
 
 
 from services import sheets_utils
+from services.drive_utils import crear_carpeta, subir_imagen_a_drive
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
@@ -34,24 +35,36 @@ print("Flask arrancó", flush=True)
 def mostar_formulario():
     return render_template('index.html')
 
+@app.route('/gracias')
+def pagina_agradecimiento():
+    return render_template('agradecimiento.html') 
+
 
 @app.route('/agregar_persona', methods=['POST'])
 def agregar_persona():
-    datos = request.json
-    if not datos:
+
+    datos = request.form.to_dict()
+    archivos = request.files
+
+    if not datos or not archivos:
         return jsonify({"error": "No se recibieron datos JSON"}), 400
     
 
     try:
-        resultado = procesar_ingreso(datos)
+        resultado = procesar_ingreso(datos, archivos)
 
-        http_status_code = 200
-        if resultado.get("status") == "failed":
-            http_status_code = 500
-        return jsonify({"mensaje": "Recibido correctamente", "datos": datos, "status":resultado}), http_status_code
+        return jsonify({
+            "mensaje": "Formulario recibido. Procesando...",
+            "datos": datos,
+            "status": resultado
+        }), 200
     except Exception as e:
         logging.error(f"Excepción en /agregar_persona: {str(e)}")
-        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+        return jsonify({
+            "mensaje": "Ocurrió un error interno, pero el formulario fue recibido.",
+            "error": str(e),
+            "status": {"status": "failed", "error": str(e)}
+        }), 200
     finally:
         pass
 

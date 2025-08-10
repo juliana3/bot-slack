@@ -2,11 +2,11 @@ import  time, logging, os
 from dotenv import load_dotenv
 import requests
 
-from handlers.ingreso_handler import procesar_ingreso
+
 from handlers.documento_handler import procesar_documento
-from services.db_operations import actualizar_estado, obtener_ingresante_por_estado, obtener_ingresante_por_id
-from services.payload_utils import payloadALTA
-from services.slack_utils import notificar_rrhh
+from handlers.ingreso_handler import procesar_ingreso
+from services.db_operations import obtener_ingresante_por_estado
+
 
 
 API_TOKEN = os.getenv("PEOPLEFORCE_TOKEN")
@@ -32,36 +32,24 @@ def reprocesar_filas():
 
             estado_alta_db = ingresante.get('estado_alta', '').strip().lower()
             estado_pdf_db = ingresante.get('estado_pdf', '').strip().lower()
-
+            #reproceso del alta
             if estado_alta_db in ["error", "pendiente", ""]:
                 logging.info(f"Reintentando alta de registro DB ID: {ingresante_id_db} en PeopleForce.")
 
-                #Se genera el payload con los datos que ya existen en la BD
-                payload = payloadALTA(ingresante)
-                headers = {
-                    "Authorization": f"Bearer {API_TOKEN}",
-                    "Content-Type": "application/json"
-                }
-
                 try:
-                    response = requests.post(API_URL, headers=headers, json=payload)
-                    if response.status_code in [200, 201]:
-                        logging.info(f"Alta OK para ingresante ID DB: {ingresante_id_db} | response: {response.json()}")
-                        actualizar_estado(ingresante_id_db, "estado_alta", "Procesada")
-                        notificar_rrhh(ingresante.get("nombre"), ingresante.get("apellido"), ingresante.get("email"),"alta")
-                        employee_id = response.json().get("id")
-                        if employee_id:
-                            actualizar_estado(ingresante_id_db, "id_pf", employee_id)
-                        f_procesadas += 1
-                    else:
-                        logging.error(f"Alta ERROR para ingresante ID DB: {ingresante_id_db} | {response.text}")
-                        f_errores += 1
-                except requests.exceptions.RequestException as e:
-                    logging.error(f"Excepción en solicitud a PeopleForce para ID DB: {ingresante_id_db} | {str(e)}")
-                    f_errores += 1
+                    resultado_alta = procesar_ingreso(ingresante, archivos ={}, es_reproceso=True)
 
-            
-                
+                    if resultado_alta.get("status") == "success":
+                        f_procesadas +=1
+                    else:
+                        f_errores +=1
+                        logging.error(f"Reproceso de alta falló para ID: {ingresante_id_db} - {resultado_alta}")
+                except Exception as e:
+                    f_errores +=1
+                    logging.error(f"Excepción reprocesando alta para ID {ingresante_id_db}: {str(e)}", exc_info=True)
+
+
+        
             #si estado_alta esta ok pero estado_pdf no
             if estado_alta_db == "procesada" and estado_pdf_db in ["error","pendiente",""]:
                 logging.info(f"Intentando subir PDF de BD ID: {ingresante_id_db}.")
@@ -73,6 +61,7 @@ def reprocesar_filas():
                     "email": ingresante.get('email'),
                     "dni_f": ingresante.get('dni_frente'),
                     "dni_d": ingresante.get('dni_dorso'),
+                    "id_carpeta_drive" : ingresante.get('id_carpeta_drive')
                 }
 
                 #procesar documento

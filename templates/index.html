@@ -20,7 +20,7 @@
       <img src="../static/img/fondo.png" alt="Portada Crombie!" class="img" />
     </div> 
 
-    <form class="form-container"  id="miFormulario">     
+    <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona" id="miFormulario">     
       <h2>Ingreso Personal - Datos</h2>
       <h4>¡Bienvenid@ a Crombie! 🙋‍♀️</h4>
         <p>
@@ -98,7 +98,6 @@
 
         <label for="tipo-cuenta">Tipo de cuenta:</label>
         <select id="tipo-cuenta" name="tipo-cuenta">
-          <option value ="">Selecciona una opción</option>
           <option value="saving">Saving</option>
           <option value="checking">Checking</option>
         </select>

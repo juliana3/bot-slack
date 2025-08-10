@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 import logging
 import time
 
-from services.db_operations import guardar_ingresante, actualizar_estado
-from services.sheets_utils import SHEET, get_col, cargar_sheets
+from services.db_operations import guardar_ingresante, actualizar_estado, obtener_id_carpeta_drive
+from services.sheets_utils import  cargar_sheets
 from services.slack_utils import notificar_rrhh
 from services.payload_utils import payloadALTA
-from services.db_operations import guardar_ingresante, actualizar_estado
+from services.drive_utils import crear_carpeta, subir_imagen_a_drive
+
 
 from handlers.documento_handler import procesar_documento
 
@@ -27,27 +28,68 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos, es_reproceso = False):
+def procesar_ingreso(datos, archivos=None, es_reproceso = False):
 
-    dni_frente_s3 = datos.get("dni-frente","")
-    dni_dorso_s3 = datos.get("dni-dorso","")
     fila_sheets = None
+    id_carpeta_ingresante = None
+    ingresante_id_db = datos.get("id") if es_reproceso else None
+
+    if es_reproceso and ingresante_id_db: # si es reproceso buscar el id de la carpeta
+        id_carpeta_ingresante = obtener_id_carpeta_drive(ingresante_id_db)
+
+        if id_carpeta_ingresante:
+            logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")
+    
+    #si NO se encontro carpeta, crear una nueva
+    if not id_carpeta_ingresante:
+        #crear una carpeta para las fotos de dni y el pdf
+        nombre_carpeta = f"{datos.get('nombre')}-{datos.get('apellido')}"
+        id_carpeta_ingresante = crear_carpeta(nombre_carpeta)
+        logging.info(f"Carpeta creada en Drive con ID: {id_carpeta_ingresante}")
+
+    datos["id_carpeta_drive"] = id_carpeta_ingresante
+    
+    #subir las imagenes si no es reproceso
+    if not es_reproceso:
+        #subir las imagenes a la carpeta
+        id_dni_frente = None
+        if "dni_frente" in archivos and archivos["dni_frente"].filename:
+            img_f = archivos["dni_frente"]
+            id_dni_frente = subir_imagen_a_drive(img_f, "dni_frente.jpg", id_carpeta_ingresante)
+            if not id_dni_frente:
+                logging.error("Falló la subida de la imagen del DNI frente a Drive.")
+                return {"status": "failed", "message": "Falló la subida del DNI frente a Drive."}
+        
+        id_dni_dorso = None
+        if "dni_dorso" in archivos and archivos["dni_dorso"].filename:
+            img_d = archivos["dni_dorso"]
+            id_dni_dorso = subir_imagen_a_drive(img_d, "dni_dorso.jpg", id_carpeta_ingresante)
+            if not id_dni_dorso:
+                logging.error("Falló la subida de la imagen del DNI dorso a Drive.")
+                return {"status": "failed", "message": "Falló la subida del DNI dorso a Drive."}
+            
+        datos["dni_frente"] = id_dni_frente
+        datos["dni_dorso"] = id_dni_dorso
 
     #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
     if not es_reproceso:
         logging.info("Intentando añadir datos a Google Sheets..")
         fila_sheets = cargar_sheets(datos)
-    
 
         if fila_sheets is None:
             logging.error("Falló la escritura en Google Sheets. Continuando sin respaldo")
-        
+
+    
+    
     #Guardar los datos iniciales en la Base de Datos
-    logging.info("Intentando guardar datos iniciales en PostgreSQL...")
-    ingresante_id_db = guardar_ingresante(datos)
-    if ingresante_id_db is None:
-        logging.error("Falló la escritura inicial en PostgreSQL")
-        return {"error": "Error al guardar datos en la base de datos princcipal", "status": "failed", "status_code": 500}
+    if not ingresante_id_db:
+        logging.info("Intentando guardar datos iniciales en PostgreSQL...")
+        ingresante_id_db = guardar_ingresante(datos)
+
+        if ingresante_id_db is None:
+            logging.error("Falló la escritura inicial en PostgreSQL")
+            return {"error": "Error al guardar datos en la base de datos princcipal", "status": "failed", "status_code": 500}
+
 
     # Armar payload para mandar a People Force
     payload = payloadALTA(datos)
@@ -80,8 +122,9 @@ def procesar_ingreso(datos, es_reproceso = False):
                     "nombre": datos.get("nombre", ""),
                     "apellido": datos.get("apellido", ""),
                     "email": datos.get("email", ""),
-                    "dni_f": dni_frente_s3,
-                    "dni_d": dni_dorso_s3,
+                    "dni_f": datos.get("dni_frente", ""),
+                    "dni_d": datos.get("dni_dorso", ""),
+                    "id_carpeta_drive" : id_carpeta_ingresante,
                 }
 
                 try:

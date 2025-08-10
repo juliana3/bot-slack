@@ -1,47 +1,36 @@
 import logging
-import requests
 import io
 from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
-from services.s3_utils import descargar_archivo_desde_s3
+from services.drive_utils import descargar_imagen_desde_drive
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
-def armar_pdf_dni(nombre_persona, bucket_name, object_key_dni_frente, object_key_dni_dorso):
+def armar_pdf_dni(nombre_persona,id_dni_frente, id_dni_dorso):
     """
-    Descarga imágenes de DNI desde un bucket de S3 usando sus object_key,
-    y las usa para crear un PDF.
+    Descarga imágenes de DNI desde google drive y las usa para crear un PDF."""
 
-    Args:
-        nombre_persona (str): Nombre de la persona para fines de logging.
-        bucket_name (str): Nombre del bucket de S3 donde se encuentran las imágenes.
-        object_key_dni_frente (str): Clave del objeto (ruta) de la imagen del DNI frente en S3.
-        object_key_dni_dorso (str): Clave del objeto (ruta) de la imagen del DNI dorso en S3.
-
-    Returns:
-        bytes: Contenido binario del PDF generado, o None si falla.
-    """
     try:
-        logging.info(f"armar_pdf_dni: Descargando imagen de DNI frente (object_key: {object_key_dni_frente}) desde S3.")
-        # Usar la función de s3_utils para descargar la imagen
-        contenido_frente = descargar_archivo_desde_s3(bucket_name, object_key_dni_frente)
-        if contenido_frente is None:
+        logging.info("armar_pdf_dni: Descargando imagen de DNI frente desde Google Drive.")
+        # Usar la función de drive_utils para descargar la imagen
+        img_frente = descargar_imagen_desde_drive(id_dni_frente)
+        if img_frente is None:
             logging.error(f"armar_pdf_dni: No se pudo descargar la imagen del DNI frente para {nombre_persona}.")
             return None
-        img_frente = Image.open(io.BytesIO(contenido_frente))
+        img_frente = Image.open(io.BytesIO(img_frente))
 
-        logging.info(f"armar_pdf_dni: Descargando imagen de DNI dorso (object_key: {object_key_dni_dorso}) desde S3.")
-        # Usar la función de s3_utils para descargar la imagen
-        contenido_dorso = descargar_archivo_desde_s3(bucket_name, object_key_dni_dorso)
-        if contenido_dorso is None:
+        logging.info(f"armar_pdf_dni: Descargando imagen de DNI dorso desde Google Drive.")
+        # Usar la función de drive_utils para descargar la imagen
+        img_dorso = descargar_imagen_desde_drive(id_dni_dorso)
+        if img_dorso is None:
             logging.error(f"armar_pdf_dni: No se pudo descargar la imagen del DNI dorso para {nombre_persona}.")
             return None
-        img_dorso = Image.open(io.BytesIO(contenido_dorso))
+        img_dorso = Image.open(io.BytesIO(img_dorso))
 
         # Crear el PDF
         buffer = io.BytesIO()
@@ -59,6 +48,7 @@ def armar_pdf_dni(nombre_persona, bucket_name, object_key_dni_frente, object_key
         p.showPage()
         p.save()
         buffer.seek(0)
+        logging.info(f"PDF generado correctamente para {nombre_persona}.")
         return buffer.getvalue()
 
     except Exception as e:
