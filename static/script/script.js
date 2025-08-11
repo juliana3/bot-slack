@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const apellidoInput = document.getElementById("apellido");
   const domicilioInput = document.getElementById("domicilio");
   const localidadInput = document.getElementById("localidad");
-  // Javascript antiguo funcionando 
+
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
     return texto
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .join(' ');
   }
 
-  // --- Lógica Celular ---
+  // VALIDACION DE CELULAR
   if (inputCelular) {
     const iti = intlTelInput(inputCelular, {
       initialCountry: "auto",
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica CBU ---
+  // VALIDACIONES PARA CBU
   if (inputCBU) {
     inputCBU.addEventListener('keydown', (e) => {
       if (!((e.key >= '0' && e.key <= '9') ||
@@ -119,14 +119,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica DNI ---
+  // VALIDACIONES PARA DOCUMENTO
   if (inputDNI) {
     inputDNI.addEventListener('input', () => {
       inputDNI.value = inputDNI.value.replace(/\D/g, '').slice(0, 8);
     });
   }
 
-  // --- Lógica tipo contrato ---
+  // OPCIONES DE CONTRATO
   if (tipoContrato) {
     tipoContrato.addEventListener("change", () => {
       const valor = tipoContrato.value;
@@ -147,7 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica submit: Validaciones y capitalización ---
+  // VALIDACION FINAL
+
   if (form) {
     form.addEventListener('submit', (e) => {
       // Validar DNI

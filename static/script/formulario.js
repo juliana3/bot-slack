@@ -2,8 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const formulario = document.getElementById("miFormulario");
     const mensaje = document.getElementById("mensajeAgradecimiento");
 
-    formulario.addEventListener("submit", function (event) {
-        event.preventDefault(); // Evita el envío por defecto del navegador
+    formulario.addEventListener("submit", function () {
 
         const formData = new FormData(formulario);
 
@@ -26,5 +25,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
-mensaje.classList.add("mostrar");
