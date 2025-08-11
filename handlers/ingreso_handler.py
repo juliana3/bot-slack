@@ -74,7 +74,6 @@ def procesar_ingreso(datos, archivos=None, es_reproceso = False):
     #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
     if not es_reproceso:
         logging.info("Intentando añadir datos a Google Sheets..")
-        print("ESTOS SON LOS DATOS QUE SE CARGAN EN SHEETS: ", datos)
         fila_sheets = cargar_sheets(datos)
 
         if fila_sheets is None:
