@@ -175,7 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => {
             console.error('Error al enviar el formulario:', error);
-            alert("Hubo un error al enviar el formulario. Intenta de nuevo");
       });
           
         

@@ -115,6 +115,11 @@ def formatear_fecha(fecha):
     try:
         fecha_objeto = datetime.datetime.strptime(fecha, '%d/%m/%Y')
         return fecha_objeto.strftime('%Y-%m-%d')
-    except (ValueError, TypeError) as e:
-        logging.error(f"Error al convertir la fecha: {fecha}. Error: {e}")
-        return None
+    except ValueError:
+        try:
+           fecha_objeto = datetime.datetime.strptime(fecha, '%d-%m-%Y')
+           return fecha_objeto.strftime('%Y-%m-%d')
+        
+        except (ValueError, TypeError) as e:
+            logging.error(f"Error al convertir la fecha: {fecha}. Error: {e}")
+            return None
