@@ -2,7 +2,7 @@ attr==0.3.2
 brotli==1.1.0
 brotlicffi==1.1.0.0
 chardet==5.2.0
-click==8.2.1
+click==8.1.8
 ConfigParser==7.2.0
 cryptography==45.0.6
 docutils==0.22
