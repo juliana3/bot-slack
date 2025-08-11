@@ -107,19 +107,23 @@ def convertir_a_int(dato):
                 logging.error(f"El valor '{dato}' no se puede convertir a número.")
 
 
-#me parece que la fecha esta llegando con formato aaaa-mm-dd desde el formulario. HAY QUE ARREGLAR
-def formatear_fecha(fecha):
+def formatear_fecha_PF(fecha):
     if fecha is None:
         return None
     
     try:
-        fecha_objeto = datetime.datetime.strptime(fecha, '%d/%m/%Y')
+        fecha_objeto = datetime.datetime.strptime(fecha, '%Y-%m-%d')
         return fecha_objeto.strftime('%Y-%m-%d')
     except ValueError:
         try:
-           fecha_objeto = datetime.datetime.strptime(fecha, '%d-%m-%Y')
-           return fecha_objeto.strftime('%Y-%m-%d')
-        
-        except (ValueError, TypeError) as e:
-            logging.error(f"Error al convertir la fecha: {fecha}. Error: {e}")
-            return None
+            fecha_objeto = datetime.datetime.strptime(fecha, '%d/%m/%Y')
+            return fecha_objeto.strftime('%Y-%m-%d')
+        except ValueError:
+            try:
+                fecha_objeto = datetime.datetime.strptime(fecha, '%d-%m-%Y')
+                return fecha_objeto.strftime('%Y-%m-%d')
+            except (ValueError, TypeError) as e:
+                # Si todos los intentos fallan, registra el error y retorna None
+                logging.error(f"Error al convertir la fecha: {fecha}. Error: {e}")
+                return None
+

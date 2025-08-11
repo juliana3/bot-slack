@@ -1,5 +1,5 @@
 
-from services.helpers_utils import convertir_a_int, formatear_fecha
+from services.helpers_utils import convertir_a_int,  formatear_fecha_PF
 
 def payloadALTA(datos):
     #arma el payload con los datos de la fila de la base de datos
@@ -11,7 +11,7 @@ def payloadALTA(datos):
         "direccion" : datos.get("domicilio", ""),
         "localidad" : datos.get("localidad", ""),
         "celular": convertir_a_int(datos.get("celular", "")),
-        "date_of_birth" : formatear_fecha(datos.get("fecha_nacimiento", "")),
+        "date_of_birth" : formatear_fecha_PF(datos.get("fecha_nacimiento", "")),
         "obra_social" : datos.get("obra_social", ""),
         "código_obra_social" : datos.get("codigo_afip", ""),
     }
@@ -22,7 +22,7 @@ def payloadALTA(datos):
             payload.update({
                 #deposito
                 "banco_2" : datos.get("banco"),
-                "nro_de_cuenta_3" : datos.get("numero_cuenta"),
+                "nro_de_cuenta_3" : datos.get("cuenta"),
                 "alias_3" : datos.get("alias"),
                 "cbu_3": datos.get("cbu"),
                 "cuil_3" : datos.get("cuil"),
@@ -30,7 +30,7 @@ def payloadALTA(datos):
 
                 #transferencia
                 "banco": datos.get("banco"),
-                "nro_de_cuenta_2" : datos.get("numero_cuenta"),
+                "nro_de_cuenta_2" : datos.get("cuenta"),
                 "alias_2": datos.get("alias"),
                 "cbu_2": datos.get("cbu"),
                 "cuil_2" : datos.get("cuil"),
@@ -39,7 +39,7 @@ def payloadALTA(datos):
             payload.update({
                 #transferencia
                 "banco": datos.get("banco"),
-                "nro_de_cuenta_2" : datos.get("numero_cuenta"),
+                "nro_de_cuenta_2" : datos.get("cuenta"),
                 "alias_2": datos.get("alias"),
                 "cbu_2": datos.get("cbu"),
                 "cuil_2" : datos.get("cuil"),

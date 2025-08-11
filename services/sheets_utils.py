@@ -1,3 +1,4 @@
+import datetime
 import logging
 import re
 import gspread
@@ -39,7 +40,7 @@ FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los va
     "ALIAS": "alias",
     "CUIL": "cuil",
     "Banco": "banco",
-    "Numero de cuenta": "numero_cuenta", 
+    "Numero de cuenta": "cuenta", 
     "Bank name": "bank_name", 
     "Bank address": "bank_address", 
     "Swift code": "swift_code", 

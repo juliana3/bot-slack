@@ -20,7 +20,7 @@
       <img src="../static/img/fondo.png" alt="Portada Crombie!" class="img" />
     </div> 
 
-    <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona" id="miFormulario">     
+    <form class="form-container"  method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona" id="miFormulario">     
       <h2>Ingreso Personal - Datos</h2>
       <h4>¡Bienvenid@ a Crombie! 🙋‍♀️</h4>
         <p>
@@ -66,7 +66,7 @@
       <!-- 🔹 Tipo de contrato -->
       <div class="form-section">
         <label for="tipo-contrato">Tipo de Contrato:</label>
-        <select id="tipo-contrato" name="tipo-contrato" required>
+        <select id="tipo-contrato" name="tipo_contrato" required>
           <option value="">Seleccioná una opción</option>
           <option value="rrdd">Relación de Dependencia</option>
           <option value="monotributo">Monotributo</option>
@@ -97,7 +97,8 @@
         <input type="text" id="routing_number" name="routing_number" />
 
         <label for="tipo-cuenta">Tipo de cuenta:</label>
-        <select id="tipo-cuenta" name="tipo-cuenta">
+        <select id="tipo-cuenta" name="tipo_cuenta">
+          <option value="">Seleccioná una opción</option>
           <option value="saving">Saving</option>
           <option value="checking">Checking</option>
         </select>
@@ -113,6 +114,9 @@
 
         <label for="cuenta">Nº Cuenta:</label>
         <input type="text" id="numero_cuenta" name="cuenta" />
+
+        <label for="cuenta">CUIL:</label>
+        <input type="text" id="cuil" name="cuil" />
 
         <label for="cbu" title="CBU debe tener 22 números">CBU:</label>
         <input type="text" id="cbu" name="cbu" pattern="\d{22}" />
@@ -130,13 +134,9 @@
       <button type="submit">Enviar formulario</button>
     </form>
   </main>
-  <div id="mensajeAgradecimiento" class="mensaje-agradecimiento" style="display:none;">
-    <h2>¡Gracias por completar el formulario! 🎉</h2>
-    <p>Tu información ha sido enviada correctamente. Si necesitas modificar algo, contacta al área de RRHH.</p>
-  </div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
   <script src="../static/script/script.js"></script>
 </body>
+<!--  <script src="../static/script/redirec.js"></script> -->
 </html>
