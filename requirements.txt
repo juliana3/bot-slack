@@ -111,7 +111,6 @@ traitlets==5.14.3
 types-python-dateutil==2.9.0.20241206
 typing_extensions==4.13.2
 uritemplate==4.2.0
-urllib3==2.0.6
 wcwidth==0.2.13
 webencodings==0.5.1
 Werkzeug==3.1.3
