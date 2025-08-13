@@ -251,7 +251,7 @@ button:hover {
 }
 
 .mensaje-agradecimiento {
-    animation: palpitar 2s infinite;
+    animation: palpitar 4s infinite;
     display: inline-block; /* Para que se vea mejor el efecto */
 }
 

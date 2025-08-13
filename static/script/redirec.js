@@ -1,35 +1,30 @@
-const frases = [
-    "¡BIENVENIDO A CROMBIE! 🎉🥳",
-    "¡A PARTIR DE AHORA ERES UN CROMBIER! 😎"
-]
+const formulario = document.getElementById('formulario-contacto');
 
-const elemento = document.getElementById('maquina-escribir')
-let indexFrase = 0;
-let indexChar = 0;
-let borrando = false;
+// Escucha el evento de envío del formulario
+formulario.addEventListener('submit', function(e) {
+  // Evita el envío por defecto del formulario
+  e.preventDefault();
 
-function animarTexto(){
-    const fraseActual = frases[indexFrase];
+  // Aquí iría tu lógica para enviar los datos al backend
+  // Por ejemplo, usando 'fetch'
+  const datos = new FormData(formulario);
+  
+  // URL de tu endpoint de backend
+  const urlBackend = 'http://localhost:4000/agregar_persona';
 
-    if (!borrando && indexChar < fraseActual.length){
-        elemento.textContent += fraseActual.charAt(indexChar);
-        indexChar++;
-        setTimeout(animarTexto, 50);
+  fetch(urlBackend, {
+    method: 'POST',
+    body: datos
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Respuesta del backend:', data);
+    // Si la respuesta es exitosa, redirige al usuario
+    if (data.status === 'success') {
+      window.location.href = 'agradecimiento.html';
+    } else {
+      // Maneja errores, muestra un mensaje, etc.
+      window.location.href = 'agradecimiento.html';
     }
-    else if (!borrando && indexChar === fraseActual.length){
-        borrando = true;
-        setTimeout(animarTexto, 5000);
-    }
-    else if(borrando && indexChar > 0){
-        elemento.textContent = fraseActual.substring(0, indexChar - 1);
-        indexChar--;
-        setTimeout(animarTexto, 50)
-    }
-    else if(borrando && indexChar === 0){
-        borrando = false;
-        indexFrase = (indexFrase + 1) % frases.length;
-        setTimeout(animarTexto, 500);
-    }
-}
-
-animarTexto();
+  });
+});

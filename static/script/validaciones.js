@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const apellidoInput = document.getElementById("apellido");
   const domicilioInput = document.getElementById("domicilio");
   const localidadInput = document.getElementById("localidad");
+  const inputFecha = document.getElementById("fecha_nacimiento");
 
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
@@ -151,12 +152,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (form) {
     form.addEventListener('submit', (e) => {
+      if(inputFecha && inputFecha.value){
+        let [year, month, day] = inputFecha.value.split("-");
+        let fechaTexto = `${day}-${month}-${year}`;
+        inputFecha.value = fechaTexto;
+      }
+      
       // Validar DNI
-      const dniValor = inputDNI.value;
-      if (!/^\d{8}$/.test(dniValor)) {
-        e.preventDefault();
-        alert("El DNI debe tener exactamente 8 números.");
-        return;
+      if (inputDNI) {
+        const dniValor = inputDNI.value;
+        if (!/^\d{8}$/.test(dniValor)) {
+          e.preventDefault();
+          alert("El DNI debe tener exactamente 8 números.");
+          return;
+        }
       }
 
       // Capitalizar campos
