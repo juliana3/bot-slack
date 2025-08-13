@@ -98,7 +98,7 @@ rpds-py==0.27.0
 rsa==4.9.1
 s3transfer==0.13.1
 schedule==1.2.2
-scipy==1.15.3
+scipy==1.13.1
 six==1.17.0
 slackclient==2.9.4
 slackeventsapi==3.0.3
