@@ -263,3 +263,29 @@ button:hover {
         transform: scale(1.02);
     }
 }
+
+.declaracion-jurada {
+  background-color: #9696967a;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center; /* Esto centra verticalmente checkbox y texto */
+  gap: 10px;
+}
+
+.declaracion-jurada input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin: 0; /* Quita margen superior extra */
+}
+
+.declaracion-jurada label {
+  cursor: pointer;
+  line-height: 1.4;
+  margin: 0; /* Asegura que no haya margen extraño */
+}

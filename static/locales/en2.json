@@ -35,5 +35,6 @@
     "ALIAS:": "Alias:",
     "Nombre de la obra social/prepaga:": "Health Insurance Name:",
     "Código de identificación de la Obra Social en AFIP:": "Health Insurance AFIP ID Code:",
-    "Enviar formulario": "Submit Form"
+    "Enviar formulario": "Submit Form",
+    "Acepto que la información proporcionada es verdadera." : "I agree that the information provided is true."
 }
