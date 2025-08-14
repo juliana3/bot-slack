@@ -3,6 +3,12 @@
   --responsive-max-width: 85%; /* Por defecto para pantallas <= 768px, ajustado luego para <= 480px */
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* Estilos base para todos los tamaños de pantalla */
 body {
   background: #26282a;
@@ -43,6 +49,13 @@ body {
 
 .header {
   width: 100%;
+  margin-bottom: 20px;
+  max-width: 575px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.header {
   margin-bottom: 20px;
 }
 
@@ -150,76 +163,6 @@ button:hover {
   background-color: #005ecb;
 }
 
-
-/* Para pantallas más pequeñas de 768px (tablets y móviles grandes) */
-@media (max-width: 768px) {
-  body {
-    padding: 20px 15px;
-    /* Ajusta la posición y tamaño del fondo para móviles */
-    background-size: 50% auto; /* La imagen al 50% del ancho del viewport en tablets */
-    background-position: right 15px center; /* Menor margen a la derecha, centrado verticalmente */
-  }
-
-  /* Aquí es donde la imagen y el formulario empiezan a usar el ancho responsivo */
-  .header .img,
-  .form-container {
-    max-width: var(--responsive-max-width); /* Utiliza la variable responsiva */
-  }
-
-  .form-container {
-    padding: 30px 25px;
-  }
-
-  label {
-    font-size: 13px;
-  }
-
-  input,
-  select,
-  textarea {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  button {
-    padding: 12px;
-    font-size: 15px;
-  }
-}
-
-/* Para pantallas más pequeñas de 480px (móviles) */
-@media (max-width: 480px) {
-  body {
-    padding: 15px 10px;
-    /* Ajusta aún más la posición y tamaño del fondo para móviles muy pequeños */
-    background-size: 60% auto; /* La imagen al 60% del ancho del viewport en móviles pequeños */
-    background-position: right 10px center; /* Margen aún menor a la derecha, centrado verticalmente */
-  }
-
-  /* Ajusta aún más la variable responsiva para pantallas muy pequeñas */
-  :root {
-    --responsive-max-width: 90%;
-  }
-
-  .form-container {
-    padding: 20px 15px;
-    border-radius: 15px;
-  }
-
-  .form-section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-  }
-
-  label {
-    margin-top: 12px;
-  }
-
-  button {
-    margin-top: 25px;
-  }
-}
-
 .mensaje-agradecimiento {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
@@ -288,4 +231,82 @@ button:hover {
   cursor: pointer;
   line-height: 1.4;
   margin: 0; /* Asegura que no haya margen extraño */
+}
+
+@media (max-width: 768px) {
+  body {
+    background-size: 50% auto;
+    padding: 20px 15px; /* Reducimos el padding del body */
+  }
+
+  .header .img {
+    /* Asegura que la imagen nunca se desborde */
+    max-width: 100%;
+  }
+
+  .form-container {
+    padding: 30px 25px;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+  }
+}
+
+
+/* Para pantallas de hasta 480px de ancho (Móviles) */
+@media (max-width: 480px) {
+  body {
+    background-size: 70% auto;
+    background-position: top 25px center;
+    animation: none;
+    padding: 20px 15px; /* Padding lateral en el body para crear un margen */
+  }
+
+  .form-container {
+    /*
+     * AJUSTE CLAVE:
+     * Al usar width: 100%, el formulario ocupará todo el ancho disponible DENTRO de los
+     * 15px de padding del body. Se verá grande, ocupando casi toda la pantalla,
+     * pero sin desbordarse por los lados.
+    */
+    width: 100%;
+    padding: 25px 20px;
+  }
+
+  /*
+    Se mantienen las mejoras de legibilidad y espaciado para móviles
+  */
+  label, input, select, textarea, .declaracion-jurada label {
+    font-size: 16px;
+  }
+
+  input,
+  select,
+  textarea {
+    margin-top: 12px;
+    padding: 14px 16px;
+  }
+
+  button {
+    margin-top: 35px;
+    padding: 16px;
+    font-size: 18px;
+  }
+
+  .declaracion-jurada {
+    padding: 15px;
+    font-size: 15px;
+  }
+
+  .declaracion-jurada input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mensaje-agradecimiento {
+    width: 100%;
+    font-size: 16px;
+  }
 }
