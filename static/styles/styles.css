@@ -1,6 +1,10 @@
-/* Define una propiedad personalizada CSS para el ancho máximo compartido en modo responsivo */
+/* ==========================================================================
+   ESTILOS GENERALES Y DE ESCRITORIO
+   ========================================================================== */
+
+/* Propiedades personalizadas y reseteo de box-sizing */
 :root {
-  --responsive-max-width: 85%; /* Por defecto para pantallas <= 768px, ajustado luego para <= 480px */
+  --responsive-max-width: 85%;
 }
 
 *,
@@ -9,14 +13,13 @@
   box-sizing: border-box;
 }
 
-/* Estilos base para todos los tamaños de pantalla */
+/* Estilos base para el cuerpo de la página */
 body {
   background: #26282a;
   background-image: url("../img/coloresCrombie.png");
   background-repeat: no-repeat;
-  background-attachment: fixed; /* La imagen se queda fija al hacer scroll */
+  background-attachment: fixed;
   background-size: 30% auto;
-  /* background-position: right 25px center; /* <-- A 25px de la derecha, centrada verticalmente */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   min-height: 100vh;
@@ -24,74 +27,64 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
-  box-sizing: border-box;
-
   animation: moverFondo 15s linear infinite;
 }
 
 @keyframes moverFondo {
-  0% {
-    background-position: right 25px top 25px;
-  }
-  25% {
-    background-position: right 75px top 25px;
-  }
-  50% {
-    background-position: right 75px top 75px;
-  }
-  75% {
-    background-position: right 25px top 75px;
-  }
-  100% {
-    background-position: right 25px top 25px;
-  }
+  0% { background-position: right 25px top 25px; }
+  25% { background-position: right 75px top 25px; }
+  50% { background-position: right 75px top 75px; }
+  75% { background-position: right 25px top 75px; }
+  100% { background-position: right 25px top 25px; }
 }
 
-.header {
-  width: 100%;
-  margin-bottom: 20px;
+/* --- SECCIÓN CORREGIDA PARA ALINEACIÓN PERFECTA --- */
+
+/* Unificamos el control de ancho y centrado para header, formulario y mensaje */
+.header,
+.form-container,
+.mensaje-agradecimiento {
+  /* La clave: TODOS los elementos principales comparten el MISMO ancho máximo */
   max-width: 575px;
+  /* Ocupan el 100% del espacio hasta llegar al max-width, haciéndolos responsive por defecto */
+  width: 100%;
+  /* Se centran perfectamente en la página */
   margin-left: auto;
   margin-right: auto;
 }
 
+/* Espaciado específico para cada contenedor */
 .header {
   margin-bottom: 20px;
 }
 
-/* Estilos específicos para la imagen dentro del header */
+.mensaje-agradecimiento {
+  margin-top: 40px;
+}
+
+/* La imagen ahora simplemente llena su contenedor (.header) */
 .header .img {
-  width: 100%; /* Ocupa todo el ancho disponible del .header */
-  max-width: 650px; /* Fija el ancho máximo para la imagen en escritorio */
+  width: 100%;
   height: auto;
   border-radius: 16px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  display: block; /* Previene espacios extra debajo de la imagen */
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.613);
 }
 
-/* Nota: Esta regla es muy genérica y menos específica que .header .img.
-   Considera si realmente la necesitas y si no causa conflictos.
-   Si .header .img ya maneja la imagen principal, esta podría ser redundante o problemática. */
-.img {
-  width: 100%;
-  margin: 0px;
-}
-
+/* Estilos del formulario (sin ancho y centrado, que ya están definidos arriba) */
 .form-container {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 40px;
-  max-width: 575px; /* Fija el ancho máximo para el formulario en escritorio */
-  width: 100%; /* Permite que se achique por debajo del max-width */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  margin-left: auto;
-  margin-right: auto;
 }
 
+/* --- FIN DE LA SECCIÓN CORREGIDA --- */
+
+
+/* Estilos de las secciones del formulario */
 .form-section {
   margin-bottom: 40px;
   border-bottom: 1px solid rgb(0, 0, 0);
@@ -104,6 +97,7 @@ body {
   padding-bottom: 0;
 }
 
+/* Estilos para etiquetas (labels) */
 label {
   display: block;
   margin-top: 16px;
@@ -112,6 +106,7 @@ label {
   color: #000000;
 }
 
+/* Estilos para campos de entrada, selectores y áreas de texto */
 input,
 select,
 textarea {
@@ -123,21 +118,15 @@ textarea {
   background-color: #9696967a;
   font-size: 14px;
   color: #000;
-  box-sizing: border-box;
   transition: 0.2s ease all;
 }
 
-/* IMPORTANTE para intl-tel-input: */
-/* El plugin intl-tel-input envuelve el input 'tel' en un div y añade un botón.
-   La regla `width: 100%;` en el input podría necesitar ser ajustada o sobrescrita
-   para el input de teléfono específico (`#celular`) para que se adapte
-   correctamente al ancho total de su contenedor generado por el plugin.
-   Considera añadir un estilo específico para `.iti__flag-container + .form-control`
-   (clase generada por el plugin) o para el contenedor principal de intl-tel-input. */
-.iti { /* Clase principal del contenedor intl-tel-input */
-    width: 100%; /* Asegura que el contenedor del input de teléfono ocupe todo el ancho disponible */
+/* Estilo para el contenedor del input de teléfono (intl-tel-input) */
+.iti {
+  width: 100%;
 }
 
+/* Efecto de foco en los campos */
 input:focus,
 select:focus,
 textarea:focus {
@@ -145,6 +134,7 @@ textarea:focus {
   box-shadow: 0 0 0 2px #007aff;
 }
 
+/* Estilo del botón de envío */
 button {
   margin-top: 30px;
   width: 100%;
@@ -163,26 +153,30 @@ button:hover {
   background-color: #005ecb;
 }
 
+/* Contenedor del mensaje de agradecimiento */
 .mensaje-agradecimiento {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
   padding: 40px;
-  max-width: 575px;
-  width: 100%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 40px;
   text-align: center;
   color: #000000;
   font-size: 15px;
-  font-family:inherit;
+  font-family: inherit;
   font-style: italic;
   font-weight: bold;
+  animation: palpitar 4s infinite;
+  display: inline-block;
 }
 
+@keyframes palpitar {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Animación de máquina de escribir y parpadeo del cursor */
 #maquina-escribir::after {
   content: '|';
   animation: blink 0.7s infinite;
@@ -193,20 +187,7 @@ button:hover {
   50% { opacity: 0; }
 }
 
-.mensaje-agradecimiento {
-    animation: palpitar 4s infinite;
-    display: inline-block; /* Para que se vea mejor el efecto */
-}
-
-@keyframes palpitar {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.02);
-    }
-}
-
+/* Estilos de la declaración jurada */
 .declaracion-jurada {
   background-color: #9696967a;
   padding: 15px 20px;
@@ -216,7 +197,7 @@ button:hover {
   font-size: 14px;
   color: #333;
   display: flex;
-  align-items: center; /* Esto centra verticalmente checkbox y texto */
+  align-items: center;
   gap: 10px;
 }
 
@@ -224,89 +205,79 @@ button:hover {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  margin: 0; /* Quita margen superior extra */
+  margin: 0;
 }
 
 .declaracion-jurada label {
   cursor: pointer;
   line-height: 1.4;
-  margin: 0; /* Asegura que no haya margen extraño */
+  margin: 0;
 }
 
+
+/* ==========================================================================
+                                RESPONSIVE
+   ========================================================================== */
+
+/* PARA PANTALLAS TIPO TABLET Y MÓVILES PEQUEÑOS (Hasta 768px) */
 @media (max-width: 768px) {
   body {
     background-size: 50% auto;
-    padding: 20px 15px; /* Reducimos el padding del body */
+    padding: 30px 15px;
   }
-
-  .header .img {
-    /* Asegura que la imagen nunca se desborde */
-    max-width: 100%;
-  }
-
   .form-container {
     padding: 30px 25px;
   }
-
   .form-section {
     margin-bottom: 30px;
     padding-bottom: 25px;
   }
 }
 
-
-/* Para pantallas de hasta 480px de ancho (Móviles) */
+/* PARA PANTALLAS DE MÓVILES (Hasta 480px) */
 @media (max-width: 480px) {
   body {
-    background-size: 70% auto;
-    background-position: top 25px center;
+    padding: 20px 15px;
     animation: none;
-    padding: 20px 15px; /* Padding lateral en el body para crear un margen */
   }
-
   .form-container {
-    /*
-     * AJUSTE CLAVE:
-     * Al usar width: 100%, el formulario ocupará todo el ancho disponible DENTRO de los
-     * 15px de padding del body. Se verá grande, ocupando casi toda la pantalla,
-     * pero sin desbordarse por los lados.
-    */
-    width: 100%;
     padding: 25px 20px;
   }
+  .form-container h2 { font-size: 22px; }
+  .form-container h4 { font-size: 18px; }
+  .form-container p { font-size: 15px; line-height: 1.5; }
 
-  /*
-    Se mantienen las mejoras de legibilidad y espaciado para móviles
-  */
-  label, input, select, textarea, .declaracion-jurada label {
+  label {
     font-size: 16px;
+    font-weight: 600;
   }
-
   input,
   select,
   textarea {
-    margin-top: 12px;
-    padding: 14px 16px;
+    font-size: 16px; /* Evita zoom automático en iOS */
+    padding: 15px;
+    margin-top: 10px;
   }
-
   button {
-    margin-top: 35px;
+    margin-top: 30px;
     padding: 16px;
     font-size: 18px;
+    border-radius: 12px;
   }
-
   .declaracion-jurada {
     padding: 15px;
+    gap: 15px;
+  }
+  .declaracion-jurada label {
     font-size: 15px;
   }
-
   .declaracion-jurada input[type="checkbox"] {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
   }
-
   .mensaje-agradecimiento {
     width: 100%;
+    padding: 30px 20px;
     font-size: 16px;
   }
 }
