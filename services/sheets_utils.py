@@ -1,14 +1,18 @@
 import datetime
 import logging
 import re
+import os
 import gspread
+from dotenv import load_dotenv
 from google.oauth2 import service_account
 
+load_dotenv()
 #configuracion del acceso a Google Sheets
 SCOPE  = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 CREDS  = service_account.Credentials.from_service_account_file("chatbot-people-466623-1ec1f3039c87.json",scopes=SCOPE)
 CLIENT = gspread.authorize(CREDS)
-SHEET  = CLIENT.open("Respaldo-ingresos").sheet1
+SHEET_ID = os.getenv("ID_SPREADSHEET")
+SHEET  = CLIENT.open_by_key(SHEET_ID).sheet1
 
 #funcion que devuelve un diccionario con los nombres de las columnas y sus indices
 def get_col(sheet = SHEET):
@@ -57,14 +61,12 @@ FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los va
 
 def cargar_sheets(data_json):
     """
-    Añade una nueva fila a Google Sheets con los datos del formulario.
-    Mapea las claves del JSON (nombres de campos del formulario) a los nombres de las columnas de la hoja.
+    Agrega una nueva fila a Sheets con los datos del formulario.
+    Mapea las claves del JSON (nombres de campos del formulario(html)) a los nombres de las columnas de la hoja.
 
-    Args:
-        data_json (dict): Diccionario con los datos del formulario.
+    Argumentos:data_json (dict): Diccionario con los datos del formulario.
 
-    Returns:
-        int: El número de la fila añadida, o None si falla.
+    Retorna:int: El número de la fila añadida, o None si falla.
     """
     if SHEET is None:
         logging.error("No se pudo añadir datos a la hoja: SHEET no está inicializado.")

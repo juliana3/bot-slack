@@ -6,7 +6,6 @@ import logging
 
 
 from services import sheets_utils
-from services.drive_utils import crear_carpeta, subir_imagen_a_drive
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas

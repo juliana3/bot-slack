@@ -58,20 +58,3 @@ def payloadALTA(datos):
 
     return payload
 
-
-#esta me parece que no funciona
-def payloadPDF(nro_fila, columnas, fila_data):
-    #comprobacion para saber si la columna existe y si el indice es valido
-    get_val = lambda col_name: fila_data[columnas[col_name] - 1] if col_name in columnas and columnas[col_name] - 1 < len(fila_data) else ""
-
-    payload = {
-        "fila" : nro_fila,
-        "nombre" : get_val("Nombre"),
-        "apellido" : get_val("Apellido"),
-        "email" : get_val("Email"),
-        "dni_f" : get_val("DNI frente"),
-        "dni_d" : get_val("DNI dorso"),
-        "employee_id" : get_val("ID PF")
-    }
-
-    return payload

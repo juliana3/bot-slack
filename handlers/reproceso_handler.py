@@ -1,6 +1,5 @@
 import  time, logging, os
 from dotenv import load_dotenv
-import requests
 
 
 from handlers.documento_handler import procesar_documento
@@ -8,6 +7,7 @@ from handlers.ingreso_handler import procesar_ingreso
 from services.db_operations import obtener_ingresante_por_estado
 
 
+load_dotenv()
 
 API_TOKEN = os.getenv("PEOPLEFORCE_TOKEN")
 API_URL= os.getenv("PEOPLEFORCE_URL")

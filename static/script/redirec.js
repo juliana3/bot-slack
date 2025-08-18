@@ -4,9 +4,6 @@ const formulario = document.getElementById('formulario-contacto');
 formulario.addEventListener('submit', function(e) {
   // Evita el envío por defecto del formulario
   e.preventDefault();
-
-  // Aquí iría tu lógica para enviar los datos al backend
-  // Por ejemplo, usando 'fetch'
   const datos = new FormData(formulario);
   
   // URL de tu endpoint de backend

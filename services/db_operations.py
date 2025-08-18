@@ -107,7 +107,7 @@ def actualizar_estado(id_ingresante, columna, valor):
     try:
         cur = conn.cursor()
         
-        # Lista blanca de columnas para evitar inyección SQL
+        # Lista de columnas que se pueden editar para evitar inyección SQL
         allowed_columns = ['estado_alta', 'id_pf', 'estado_pdf']
         if columna not in allowed_columns:
             logging.error(f"Intento de actualizar una columna no permitida: {columna}")

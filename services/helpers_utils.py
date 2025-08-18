@@ -60,11 +60,6 @@ def validar_celular(celular, default_region="AR"):
         logging.error(f"Error inesperado al validar celular: {e}", exc_info=True)
         return False, "Error inesperado al validar el número de celular."
     
-def validar_s3_key(s3_key, field_name="Clave S3"):
-    # Valida que una clave de S3 sea un string no vacio y cumpla con las reglas de formato.
-    if not isinstance(s3_key, str) or not s3_key.strip():
-        return False, f"{field_name} no puede estar vacío y debe ser un string."
-    return True, ""
 
 def validar_cbu(cbu):
     #valida que el cbu tenga 22 digitos numericos
@@ -76,7 +71,7 @@ def validar_cbu(cbu):
     return True, ""
 
 def validar_cuil(cuil):
-    #valida que el cuil tenga 1 digitos numricos
+    #valida que el cuil tenga 11 digitos numricos
     if not isinstance(cuil, str):
         return False, "CUIL debe ser un string."
     cuil_cleaned = re.sub(r'\D', '', cuil)  # Elimina cualquier caracter no numerico
