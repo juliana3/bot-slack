@@ -97,6 +97,13 @@ body {
   padding-bottom: 0;
 }
 
+.flag {
+  width: 20px;   /* ancho proporcional */
+  height: 14px;  /* similar a la altura del texto */
+  vertical-align: middle; /* para que se alinee con el texto */
+  margin-right: 6px; /* pequeño espacio entre la bandera y el nombre */
+}
+
 /* Estilos para etiquetas (labels) */
 label {
   display: block;

@@ -8,10 +8,8 @@
   <link rel="icon" type="image/x-icon" href="../static/img/Logo.png" />
   <link rel="stylesheet" href="../static/styles/vendor/intlTelInput.min.css"/>
   <!-- CSS de intl-tel-input -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css"/>
+
 </head>
 <body>
 
@@ -34,6 +32,23 @@
         </p>       
       <!-- 🔹 Sección 1: Datos Personales -->
       <div class="form-section">
+
+        <label for="pais">Seleccione su país:</label>
+        <select id="pais" name="pais" required>
+          <option value="">País:</option>
+          <option value="de">Alemania</option>
+          <option value="ar">Argentina</option>
+          <option value="au">Australia</option>
+          <option value="co">Colombia</option>
+          <option value="ec">Ecuador</option>          
+          <option value="es">España</option>
+          <option value="us">Estados Unidos</option>
+          <option value="gt">Guatemala</option>
+          <option value="pe">Perú</option>
+          <option value="uy">Uruguay</option>
+          <option value="do">República Dominicana</option>
+        </select>
+
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required />
 
@@ -41,7 +56,7 @@
         <input type="text" id="apellido" name="apellido" required />
 
         <label for="dni">DNI:</label>
-        <input type="text" id="dni" name="dni" required/>
+        <input type="text" id="dni" name="dni" required placeholder="Número de identificación"/>
 
         <label for="dni-frente">Foto del DNI (frente):</label>
         <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
