@@ -58,10 +58,10 @@
         <label for="dni">DNI:</label>
         <input type="text" id="dni" name="dni" required placeholder="Número de identificación"/>
 
-        <label for="dni-frente">Foto del DNI (frente):</label>
+        <label for="dni-frente">Foto del DNI, frente (la posición del rostro debe ser vertical):</label>
         <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
 
-        <label for="dni-dorso">Foto del DNI (dorso):</label>
+        <label for="dni-dorso">Foto del DNI, dorso:</label>
         <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
 
         <label for="email">Email personal:</label>
@@ -156,11 +156,14 @@
 
       <button type="submit">Enviar formulario</button>
     </form>
+    <canvas id="preview" style="display:none;"></canvas>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
-  <script src="../static/script/validaciones.js"></script>
-  <script src="../static/script/redirec.js"></script> 
-  <script src="../static/script/languaje.js"></script> 
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <script src="./static/script/validaciones.js"></script>
+  <script src="./static/script/redirec.js"></script> 
+  <script src="./static/script/languaje.js"></script> 
+  <script src="./static/script/face.js"></script> 
 </body>
 </html>

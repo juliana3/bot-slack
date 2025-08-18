@@ -166,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
         default:
           val = val.replace(/\D/g, '').slice(0, 8);
       }
-
       inputDNI.value = val;
     });
   }
