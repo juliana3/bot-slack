@@ -1,8 +1,3 @@
-/* ==========================================================================
-   ESTILOS GENERALES Y DE ESCRITORIO
-   ========================================================================== */
-
-/* Propiedades personalizadas y reseteo de box-sizing */
 :root {
   --responsive-max-width: 85%;
 }
@@ -13,7 +8,6 @@
   box-sizing: border-box;
 }
 
-/* Estilos base para el cuerpo de la página */
 body {
   background: #26282a;
   background-image: url("../img/coloresCrombie.png");
@@ -38,22 +32,16 @@ body {
   100% { background-position: right 25px top 25px; }
 }
 
-/* --- SECCIÓN CORREGIDA PARA ALINEACIÓN PERFECTA --- */
 
-/* Unificamos el control de ancho y centrado para header, formulario y mensaje */
 .header,
 .form-container,
 .mensaje-agradecimiento {
-  /* La clave: TODOS los elementos principales comparten el MISMO ancho máximo */
   max-width: 575px;
-  /* Ocupan el 100% del espacio hasta llegar al max-width, haciéndolos responsive por defecto */
   width: 100%;
-  /* Se centran perfectamente en la página */
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Espaciado específico para cada contenedor */
 .header {
   margin-bottom: 20px;
 }
@@ -62,16 +50,14 @@ body {
   margin-top: 40px;
 }
 
-/* La imagen ahora simplemente llena su contenedor (.header) */
 .header .img {
   width: 100%;
   height: auto;
   border-radius: 16px;
-  display: block; /* Previene espacios extra debajo de la imagen */
+  display: block; 
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.613);
 }
 
-/* Estilos del formulario (sin ancho y centrado, que ya están definidos arriba) */
 .form-container {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
@@ -81,10 +67,6 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-/* --- FIN DE LA SECCIÓN CORREGIDA --- */
-
-
-/* Estilos de las secciones del formulario */
 .form-section {
   margin-bottom: 40px;
   border-bottom: 1px solid rgb(0, 0, 0);
@@ -98,13 +80,12 @@ body {
 }
 
 .flag {
-  width: 20px;   /* ancho proporcional */
-  height: 14px;  /* similar a la altura del texto */
-  vertical-align: middle; /* para que se alinee con el texto */
-  margin-right: 6px; /* pequeño espacio entre la bandera y el nombre */
+  width: 20px;  
+  height: 14px;  
+  vertical-align: middle;
+  margin-right: 6px; 
 }
 
-/* Estilos para etiquetas (labels) */
 label {
   display: block;
   margin-top: 16px;
@@ -113,7 +94,6 @@ label {
   color: #000000;
 }
 
-/* Estilos para campos de entrada, selectores y áreas de texto */
 input,
 select,
 textarea {
@@ -128,12 +108,10 @@ textarea {
   transition: 0.2s ease all;
 }
 
-/* Estilo para el contenedor del input de teléfono (intl-tel-input) */
 .iti {
   width: 100%;
 }
 
-/* Efecto de foco en los campos */
 input:focus,
 select:focus,
 textarea:focus {
@@ -141,7 +119,6 @@ textarea:focus {
   box-shadow: 0 0 0 2px #007aff;
 }
 
-/* Estilo del botón de envío */
 button {
   margin-top: 30px;
   width: 100%;
@@ -160,7 +137,6 @@ button:hover {
   background-color: #005ecb;
 }
 
-/* Contenedor del mensaje de agradecimiento */
 .mensaje-agradecimiento {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
@@ -183,7 +159,6 @@ button:hover {
     50% { transform: scale(1.02); }
 }
 
-/* Animación de máquina de escribir y parpadeo del cursor */
 #maquina-escribir::after {
   content: '|';
   animation: blink 0.7s infinite;
@@ -194,7 +169,6 @@ button:hover {
   50% { opacity: 0; }
 }
 
-/* Estilos de la declaración jurada */
 .declaracion-jurada {
   background-color: #9696967a;
   padding: 15px 20px;
@@ -221,12 +195,8 @@ button:hover {
   margin: 0;
 }
 
+/* RESPONSIVE */
 
-/* ==========================================================================
-                                RESPONSIVE
-   ========================================================================== */
-
-/* PARA PANTALLAS TIPO TABLET Y MÓVILES PEQUEÑOS (Hasta 768px) */
 @media (max-width: 768px) {
   body {
     background-size: 50% auto;
@@ -241,7 +211,6 @@ button:hover {
   }
 }
 
-/* PARA PANTALLAS DE MÓVILES (Hasta 480px) */
 @media (max-width: 480px) {
   body {
     padding: 20px 15px;
@@ -261,7 +230,7 @@ button:hover {
   input,
   select,
   textarea {
-    font-size: 16px; /* Evita zoom automático en iOS */
+    font-size: 16px; 
     padding: 15px;
     margin-top: 10px;
   }
