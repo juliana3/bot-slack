@@ -1,8 +1,7 @@
 async function detectarIdioma() {
     const idiomaNavegador = navigator.language || navigator.userLanguage;
     if (idiomaNavegador.startsWith("es")) return "es";
-    if (idiomaNavegador.startsWith("pt")) return "pt";
-    return "en"; // por defecto
+    return "en"; 
 }
 
 async function cargarTraducciones() {

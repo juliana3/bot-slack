@@ -1,13 +1,12 @@
 async function detectarIdioma() {
     const idiomaNavegador = navigator.language || navigator.userLanguage;
     if (idiomaNavegador.startsWith("es")) return "es";
-    if (idiomaNavegador.startsWith("pt")) return "pt";
     return "en";
 }
 
 async function cargarTraducciones() {
     const idioma = await detectarIdioma();
-    const resp = await fetch(`/static/locales/${idioma}2.json`);
+    const resp = await fetch(`./static/locales/${idioma}2.json`);
     return await resp.json();
 }
 
