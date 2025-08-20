@@ -68,7 +68,7 @@ def guardar_ingresante(data_json):
                 data_json.get("routing_number", ""),  
                 data_json.get("tipo_cuenta", ""),      
                 data_json.get("zip_code", ""),         
-                data_json.get("tipo-contrato", ""),    
+                data_json.get("tipo_contrato", ""),    
                 data_json.get("dni_frente", ""),      
                 data_json.get("dni_dorso", ""),      
                 data_json.get("estado_alta", "Pendiente"),

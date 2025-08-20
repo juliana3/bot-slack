@@ -52,7 +52,7 @@ FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los va
     "Account number": "account_number", 
     "Routing number": "routing_number", 
     "Tipo de cuenta": "tipo_cuenta", 
-    "Zip code": "zip_code", 
+    "Zip code": "zip", 
     "Obra social": "obra_social", 
     "Codigo AFIP": "codigo_afip", 
     "DNI frente": "dni_frente", 

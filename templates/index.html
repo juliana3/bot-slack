@@ -33,6 +33,21 @@
         </p>       
       <!-- 🔹 Sección 1: Datos Personales -->
       <div class="form-section">
+        <label for="pais">Seleccione su país:</label>
+        <select id="pais" name="pais" required>
+          <option value="">País:</option>
+          <option value="de">Alemania</option>
+          <option value="ar">Argentina</option>
+          <option value="au">Australia</option>
+          <option value="co">Colombia</option>
+          <option value="ec">Ecuador</option>          
+          <option value="es">España</option>
+          <option value="us">Estados Unidos</option>
+          <option value="gt">Guatemala</option>
+          <option value="pe">Perú</option>
+          <option value="uy">Uruguay</option>
+          <option value="do">República Dominicana</option>
+        </select>
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required />
 
@@ -40,12 +55,12 @@
         <input type="text" id="apellido" name="apellido" required />
 
         <label for="dni">DNI:</label>
-        <input type="text" id="dni" name="dni" required/>
+        <input type="text" id="dni" name="dni" required placeholder="Número de identificación"/>
 
-        <label for="dni-frente">Foto del DNI (frente):</label>
+        <label for="dni-frente">Foto del DNI frente (la posición del rostro debe ser vertical):</label>
         <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
 
-        <label for="dni-dorso">Foto del DNI (dorso):</label>
+        <label for="dni-dorso">Foto del DNI dorso:</label>
         <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
 
         <label for="email">Email personal:</label>
@@ -130,13 +145,23 @@
         <label for="codigo-afip">Código de identificación de la Obra Social en AFIP:</label>
         <input type="text" id="codigo_afip" name="codigo_afip" />
       </div>
+      <div class="declaracion-jurada">
+        <input type="checkbox" id="acepto" name="acepto" required>
+        <label for="acepto">
+          Acepto que la información proporcionada es verdadera.
+        </label>
+      </div>
 
       <button type="submit">Enviar formulario</button>
     </form>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
-  <script src="../static/script/script.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <script src="./static/script/validaciones.js"></script>
+  <script src="./static/script/redirec.js"></script> 
+  <script src="./static/script/languaje.js"></script> 
+  <script src="./static/script/face.js"></script> 
 </body>
 <!--  <script src="../static/script/redirec.js"></script> -->
 </html>

@@ -12,8 +12,7 @@ def payloadALTA(datos):
         "localidad" : datos.get("localidad", ""),
         "celular": convertir_a_int(datos.get("celular", "")),
         "date_of_birth" : formatear_fecha_PF(datos.get("fecha_nacimiento", "")),
-        "obra_social" : datos.get("obra_social", ""),
-        "código_obra_social" : datos.get("codigo_afip", ""),
+        
     }
     
     if datos.get("tipo_contrato") == "rrdd" or datos.get("tipo_contrato") == "monotributo":
@@ -34,6 +33,9 @@ def payloadALTA(datos):
                 "alias_2": datos.get("alias"),
                 "cbu_2": datos.get("cbu"),
                 "cuil_2" : datos.get("cuil"),
+
+                "obra_social" : datos.get("obra_social", ""),
+                "código_obra_social" : datos.get("codigo_afip", ""),
             })
         else:
             payload.update({
@@ -43,6 +45,8 @@ def payloadALTA(datos):
                 "alias_2": datos.get("alias"),
                 "cbu_2": datos.get("cbu"),
                 "cuil_2" : datos.get("cuil"),
+                "obra_social" : datos.get("obra_social", ""),
+                "código_obra_social" : datos.get("codigo_afip", ""),
             })
     else:
         payload.update({
@@ -53,7 +57,7 @@ def payloadALTA(datos):
             "account_number_2": datos.get("account_number"),
             "routing_number_2": datos.get("routing_number"),
             "tipo_de_cuenta_2" : datos.get("tipo_cuenta"),
-            "zip_code_2" : datos.get("zip_code"),
+            "zip_code_2" : datos.get("zip"),
         })
 
     return payload

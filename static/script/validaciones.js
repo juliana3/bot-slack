@@ -7,12 +7,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const inputCelular = document.getElementById("celular");
   const inputCBU = document.getElementById("cbu");
+   const paisSelect = document.getElementById("pais");
   const inputDNI = document.getElementById("dni");
   const nombreInput = document.getElementById("nombre");
   const apellidoInput = document.getElementById("apellido");
   const domicilioInput = document.getElementById("domicilio");
   const localidadInput = document.getElementById("localidad");
-  // Javascript antiguo funcionando 
+  const inputFecha = document.getElementById("fecha_nacimiento");
+
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
     return texto
@@ -119,10 +121,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica DNI ---
-  if (inputDNI) {
+  // Lógica para cambiar validación según país
+  if (inputDNI && paisSelect) {
     inputDNI.addEventListener('input', () => {
-      inputDNI.value = inputDNI.value.replace(/\D/g, '').slice(0, 8);
+      const pais = paisSelect.value;
+      let val = inputDNI.value;
+
+      switch (pais) {
+        case 'de': // Alemania
+          val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
+          break;
+        case 'ar': // Argentina
+          val = val.replace(/\D/g, '').slice(0, 8);
+          break;
+        case 'au': // Australia
+          val = val.replace(/\D/g, '').slice(0, 9);
+          break;
+        case 'uy': // Uruguay
+          val = val.replace(/\D/g, '').slice(0, 8);
+          break;
+        case 'pe': // Perú
+          val = val.replace(/\D/g, '').slice(0, 8);
+          break;
+        case 'ec': // Ecuador
+          val = val.replace(/\D/g, '').slice(0, 10);
+          break;
+        case 'co': // Colombia
+          val = val.replace(/\D/g, '').slice(0, 10);
+          break;
+        case 'gt': // Guatemala
+          val = val.replace(/\D/g, '').slice(0, 13);
+          break;
+        case 'do': // República Dominicana
+          val = val.replace(/\D/g, '').slice(0, 11);
+          break;
+        case 'es': // España
+          val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
+          break;
+        case 'us': // Estados Unidos (SSN con guiones opcionales)
+          val = val.replace(/[^0-9-]/g, '').slice(0, 11);
+          break;
+        default:
+          val = val.replace(/\D/g, '').slice(0, 8);
+      }
+      inputDNI.value = val;
     });
   }
 
@@ -152,10 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       // Validar DNI
-      const dniValor = inputDNI.value;
-      if (!/^\d{8}$/.test(dniValor)) {
+      if (inputDNI && !inputDNI.checkValidity()) {
         e.preventDefault();
-        alert("El DNI debe tener exactamente 8 números.");
+        alert("Formato de documento no válido para el país seleccionado.");
         return;
       }
 
@@ -165,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (domicilioInput) domicilioInput.value = capitalizarCadaPalabra(domicilioInput.value);
       if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
 
+      //revisar esto
       const formData = new FormData(form);
      
       console.log("Enviando datos con FormData:", formData);
