@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const inputCelular = document.getElementById("celular");
   const inputCBU = document.getElementById("cbu");
-   const paisSelect = document.getElementById("pais");
+  const paisSelect = document.getElementById("pais");
   const inputDNI = document.getElementById("dni");
   const nombreInput = document.getElementById("nombre");
   const apellidoInput = document.getElementById("apellido");
