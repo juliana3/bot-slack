@@ -48,8 +48,8 @@ def agregar_persona():
     if not datos or not archivos:
         return jsonify({"error": "No se recibieron datos JSON"}), 400
     
-
     try:
+
         resultado = procesar_ingreso(datos, archivos)
 
         return jsonify({
