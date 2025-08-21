@@ -1,5 +1,6 @@
     #punto de entrada
 import threading
+from io import BytesIO
 from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
 import os
