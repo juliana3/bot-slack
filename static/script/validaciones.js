@@ -190,7 +190,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Lógica submit: Validaciones y capitalización ---
+
+  // DICE LAUTARO QUE LO REVISEN ACA 
+  
   if (form) {
+    console.log("Formulario encontrado:", form);
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       // Validar DNI
@@ -206,25 +211,28 @@ document.addEventListener("DOMContentLoaded", () => {
       if (domicilioInput) domicilioInput.value = capitalizarCadaPalabra(domicilioInput.value);
       if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
 
-      //revisar esto
       const formData = new FormData(form);
-     
-      console.log("Enviando datos con FormData:", formData);
-
-      fetch('/agregar_persona', {
+      fetch(form.action, {
         method: 'POST',
         body: formData
         })
-        .catch(error => {
-            console.error('Error al enviar el formulario:', error);
+      .then(res => {
+        if (!res.ok) throw new Error("Error en el servidor");
+        return res.json(); // o res.text() si el backend no devuelve JSON
+      })
+      .then(data => {
+        console.log("Respuesta:", data);
+        window.location.href = '/gracias';  // redirigir solo si fue exitoso
+      })
+      .catch(error => {
+        console.error('Error al enviar el formulario:', error);
+        alert("Hubo un error al enviar los datos");
       });
-          
-        
-      window.location.href = '/gracias';
-          
-          
+
 
     });
+  }else{
+    console.error("Formulario no encontrado");
   }
 
 });

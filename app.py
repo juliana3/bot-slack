@@ -43,6 +43,7 @@ def pagina_agradecimiento():
 def agregar_persona():
 
     datos = request.form.to_dict()
+    logging.info(datos)
     archivos = request.files
 
     if not datos or not archivos:
