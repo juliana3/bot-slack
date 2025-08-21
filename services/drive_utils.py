@@ -62,6 +62,7 @@ def subir_imagen_a_drive(archivo, nombre_archivo, carpeta_destino):
         return None
     
     try:
+        archivo.seek(0)
         img = Image.open(archivo)
 
         if img.mode in ("RGBA", "P"): #si viene una imagen con transparencia, convertir a rgb para eliminar la transparencia
