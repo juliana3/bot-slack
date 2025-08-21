@@ -17,7 +17,7 @@ async function cargarTraducciones() {
             ]
         },
         en: {
-            title: "¡Wlcome to Crombie!",
+            title: "¡Welcome to Crombie!",
             frases: [
                 "WELCOME TO CROMBIE! 🎉🥳",
                 "FROM NOW ON, YOU ARE A CROMBIER! 😎"
