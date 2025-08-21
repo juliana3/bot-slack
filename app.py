@@ -68,7 +68,7 @@ def agregar_persona():
         
         #esto hace que el ingreso se procese en segundo plano
         #para no bloquear la respuesta al usuario
-        thread_ingreso = threading.Thread(target=procesar_ingreso, args=(datos, archivos, ingresante_id_db))
+        thread_ingreso = threading.Thread(target=procesar_ingreso, args=(datos, archivos_en_memoria, ingresante_id_db))
         thread_ingreso.start()
 
         return jsonify({
