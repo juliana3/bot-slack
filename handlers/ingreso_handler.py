@@ -49,6 +49,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
         id_carpeta_ingresante = crear_carpeta(nombre_carpeta)
         logging.info(f"Carpeta creada en Drive con ID: {id_carpeta_ingresante}")
 
+    
     actualizar_columna(ingresante_id_db, "id_carpeta_drive", id_carpeta_ingresante)
 
     
@@ -73,6 +74,10 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
             
         actualizar_columna(ingresante_id_db, "dni_frente", id_dni_frente)
         actualizar_columna(ingresante_id_db, "dni_dorso", id_dni_dorso)
+
+        #guardar para pasarle al sheets
+        datos["dni_frente"] = id_dni_frente
+        datos["dni_dorso"] = id_dni_dorso
 
     #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
     if not es_reproceso:
