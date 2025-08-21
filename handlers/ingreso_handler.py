@@ -36,6 +36,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
     if not ingresante_id_db:
         ingresante_id_db = datos.get("id")
 
+    #si es reproceso o si ya se gguardo en la bbdd se busca el id DE LA CARPETA
     if ingresante_id_db:
         ingresante_con_id_carpeta = obtener_id_carpeta_drive(ingresante_id_db)
         if ingresante_con_id_carpeta:
