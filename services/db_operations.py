@@ -67,7 +67,7 @@ def guardar_ingresante(data_json):
                 data_json.get("account_number", ""),   
                 data_json.get("routing_number", ""),  
                 data_json.get("tipo_cuenta", ""),      
-                data_json.get("zip_code", ""),         
+                data_json.get("zip", ""),         
                 data_json.get("tipo_contrato", ""),    
                 data_json.get("dni_frente", ""),      
                 data_json.get("dni_dorso", ""),      
@@ -96,7 +96,7 @@ def guardar_ingresante(data_json):
             conn.close()
 
 
-def actualizar_estado(id_ingresante, columna, valor):
+def actualizar_columna(id_ingresante, columna, valor):
     #actualiza un campo de un ingresante
 
     conn = get_db_connection()
@@ -108,7 +108,7 @@ def actualizar_estado(id_ingresante, columna, valor):
         cur = conn.cursor()
         
         # Lista de columnas que se pueden editar para evitar inyección SQL
-        allowed_columns = ['estado_alta', 'id_pf', 'estado_pdf']
+        allowed_columns = ['estado_alta', 'id_pf', 'estado_pdf', 'id_carpeta_drive', 'dni_frente', 'dni_dorso']
         if columna not in allowed_columns:
             logging.error(f"Intento de actualizar una columna no permitida: {columna}")
             return False

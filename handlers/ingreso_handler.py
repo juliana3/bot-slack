@@ -5,7 +5,7 @@ import logging
 import time
 from io import BytesIO
 
-from services.db_operations import guardar_ingresante, actualizar_estado, obtener_id_carpeta_drive
+from services.db_operations import  actualizar_columna, obtener_id_carpeta_drive
 from services.sheets_utils import  cargar_sheets
 from services.slack_utils import notificar_rrhh
 from services.payload_utils import payloadALTA
@@ -29,21 +29,18 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso = False):
+def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = False):
 
     fila_sheets = None
     id_carpeta_ingresante = None
-
-    if not ingresante_id_db:
-        ingresante_id_db = datos.get("id")
+    ingresante_id_db = datos.get("id") if es_reproceso else ingresante_id
 
     #si es reproceso o si ya se gguardo en la bbdd se busca el id DE LA CARPETA
-    if ingresante_id_db:
-        ingresante_con_id_carpeta = obtener_id_carpeta_drive(ingresante_id_db)
-        if ingresante_con_id_carpeta:
-            id_carpeta_ingresante = ingresante_con_id_carpeta.get("id_carpeta_drive")
-            if id_carpeta_ingresante:
-                logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")
+    if es_reproceso and ingresante_id_db: # si es reproceso buscar el id de la carpeta
+        id_carpeta_ingresante = obtener_id_carpeta_drive(ingresante_id_db)
+
+        if id_carpeta_ingresante:
+            logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")
 
     #si NO se encontro carpeta, crear una nueva
     if not id_carpeta_ingresante:
@@ -52,7 +49,8 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
         id_carpeta_ingresante = crear_carpeta(nombre_carpeta)
         logging.info(f"Carpeta creada en Drive con ID: {id_carpeta_ingresante}")
 
-    datos["id_carpeta_drive"] = id_carpeta_ingresante
+    actualizar_columna(ingresante_id_db, "id_carpeta_drive", id_carpeta_ingresante)
+
     
     #subir las imagenes si no es reproceso
     if not es_reproceso:
@@ -73,8 +71,8 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
                 logging.error("Falló la subida de la imagen del DNI dorso a Drive.")
                 return {"status": "failed", "message": "Falló la subida del DNI dorso a Drive."}
             
-        datos["dni_frente"] = id_dni_frente
-        datos["dni_dorso"] = id_dni_dorso
+        actualizar_columna(ingresante_id_db, "dni_frente", id_dni_frente)
+        actualizar_columna(ingresante_id_db, "dni_dorso", id_dni_dorso)
 
     #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
     if not es_reproceso:
@@ -99,7 +97,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
         if response.status_code in [200, 201]:
             logging.info(f"Alta OK para ingresante ID DB: {ingresante_id_db} | response: {response.json()}")
             #actualizar estado_alta en la BD
-            actualizar_estado(ingresante_id_db, "estado_alta", "Procesada")
+            actualizar_columna(ingresante_id_db, "estado_alta", "Procesada")
 
             #Notifica a rrhh por slack
             notificar_rrhh(payload["first_name"], payload["last_name"],payload["personal_email"], "alta")
@@ -108,7 +106,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
             #capturar el ID de la persona creada
             employee_id = response.json().get("id") #verificar con que clave devuelve PF el json
             if employee_id:
-                actualizar_estado(ingresante_id_db, "id_pf", employee_id)
+                actualizar_columna(ingresante_id_db, "id_pf", employee_id)
 
                 #armar el dict para procesar documento
                 payload_doc = {
@@ -144,14 +142,14 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
             return {"mensaje": "Alta OK pero ID no obtenido", "status": "partial_success"}
         else:
             logging.error(f"Alta ERROR para ingresante ID BD: {ingresante_id_db} | {response.text}")
-            actualizar_estado(ingresante_id_db, "estado_alta", "Error")
+            actualizar_columna(ingresante_id_db, "estado_alta", "Error")
             return {"error": "API error", "status": "failed"}
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Excepción en solicitud a People Force para ingresante ID DB: {ingresante_id_db} | {str(e)}")
-        actualizar_estado(ingresante_id_db, "estado_alta", "Error")
+        actualizar_columna(ingresante_id_db, "estado_alta", "Error")
         return {"error": "Conexíon con PeopleForce fallida", "status": "failed", "status_code": 500}
     except Exception as e:
         logging.error(f"Excepción para ingresante ID BD: {ingresante_id_db} | {str(e)}" )
-        actualizar_estado(ingresante_id_db, "estado_alta", "Error")
+        actualizar_columna(ingresante_id_db, "estado_alta", "Error")
         return {"error": "Error interno", "status": "failed", "status_code": 500}
