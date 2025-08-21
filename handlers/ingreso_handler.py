@@ -57,7 +57,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
     if not es_reproceso:
         #subir las imagenes a la carpeta
         id_dni_frente = None
-        if "dni_frente" in archivos and archivos["dni_frente"].filename:
+        if "dni_frente" in archivos:
             img_f = BytesIO(archivos["dni_frente"])
             id_dni_frente = subir_imagen_a_drive(img_f, "dni_frente.jpg", id_carpeta_ingresante)
             if not id_dni_frente:
@@ -65,7 +65,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
                 return {"status": "failed", "message": "Falló la subida del DNI frente a Drive."}
         
         id_dni_dorso = None
-        if "dni_dorso" in archivos and archivos["dni_dorso"].filename:
+        if "dni_dorso" in archivos:
             img_d = BytesIO(archivos["dni_dorso"])
             id_dni_dorso = subir_imagen_a_drive(img_d, "dni_dorso.jpg", id_carpeta_ingresante)
             if not id_dni_dorso:
