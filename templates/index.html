@@ -57,10 +57,10 @@
         <input type="text" id="dni" name="dni" required placeholder="Número de identificación"/>
 
         <label for="dni-frente">Foto del DNI, frente (la posición del rostro debe ser vertical):</label>
-        <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
+        <input type="file" id="dni_frente" name="dni_frente" accept="image/*" required />
 
         <label for="dni-dorso">Foto del DNI, dorso:</label>
-        <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
+        <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" required />
 
         <label for="email">Email personal:</label>
         <input type="email" id="email" name="email" required />
@@ -155,6 +155,11 @@
       <button type="submit">Enviar formulario</button>
     </form>
   </main>
+
+  <div id="overlay">
+    <div class="spinner"></div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
   <script src="../static/script/validaciones.js"></script>

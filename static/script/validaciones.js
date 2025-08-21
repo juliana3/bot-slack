@@ -216,4 +216,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
     });
   }
+
+  const overlay = document.getElementById("overlay");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // Mostrar overlay con spinner
+    overlay.style.display = "flex";
+
+    // Simulación de envío (3 segundos)
+    setTimeout(() => {
+      overlay.style.display = "none";
+      alert("Formulario enviado con éxito");
+      // form.submit(); // si querés enviar de verdad
+    }, 3000);
+  });
+
 });
