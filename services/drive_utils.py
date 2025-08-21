@@ -63,6 +63,10 @@ def subir_imagen_a_drive(archivo, nombre_archivo, carpeta_destino):
     
     try:
         img = Image.open(archivo)
+
+        if img.mode in ("RGBA", "P"): #si viene una imagen con transparencia, convertir a rgb para eliminar la transparencia
+            img = img.convert("RGB")
+
         buffer_temporal = io.BytesIO()
         img.save(buffer_temporal, format="JPEG")
         buffer_temporal.seek(0)
