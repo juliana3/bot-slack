@@ -42,7 +42,8 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
         ingresante_con_id_carpeta = obtener_id_carpeta_drive(ingresante_id_db)
         if ingresante_con_id_carpeta:
             id_carpeta_ingresante = ingresante_con_id_carpeta.get("id_carpeta_drive")
-            logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")
+            if id_carpeta_ingresante:
+                logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")
 
     #si NO se encontro carpeta, crear una nueva
     if not id_carpeta_ingresante:

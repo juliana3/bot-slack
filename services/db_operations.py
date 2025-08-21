@@ -231,6 +231,7 @@ def obtener_id_carpeta_drive(id_ingresante):
                 return dict(id_carpeta)
             else:
                 logging.warning(f"ID de carpeta drive para ingresante con ID {id_ingresante} no encontrado")
+                return None
     except Exception as e:
         logging.error(f"Error al obtener el ID de la carpeta drive para el ingresante con ID {id_ingresante}: {str(e)}", exc_info=True)
     finally:
