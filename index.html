@@ -4,19 +4,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8" />
   <title>Formulario Crombie</title>
-  <link rel="stylesheet" href="../static/styles/styles.css"/>
-  <link rel="icon" type="image/x-icon" href="../static/img/Logo.png" />
-  <link rel="stylesheet" href="../static/styles/vendor/intlTelInput.min.css"/>
-  <!-- CSS de intl-tel-input -->
+  <link rel="stylesheet" href="./static/styles/styles.css"/>
+  <link rel="icon" type="image/x-icon" href="./static/img/Logo.png" />
+  <link rel="stylesheet" href="./static/styles/vendor/intlTelInput.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css"/>
-
 </head>
 <body>
 
   <main class="main">
 
     <div class="header">
-      <img src="../static/img/fondo.png" alt="Portada Crombie!" class="img" />
+      <img src="./static/img/fondo.png" alt="Portada Crombie!" class="img" />
     </div> 
 
     <form class="form-container" method="POST" enctype="multipart/form-data" action="http://localhost:4000/agregar_persona" id="miFormulario">     
@@ -156,13 +154,10 @@
 
       <button type="submit">Enviar formulario</button>
     </form>
-    <canvas id="preview" style="display:none;"></canvas>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-  <script src="/static/script/validaciones.js"></script>
-  <script src="/static/script/languaje.js"></script> 
-  <script src="/static/script/face.js"></script> 
+  <script src="./static/script/validaciones.js"></script>
+  <script src="./static/script/languaje.js"></script> 
 </body>
 </html>

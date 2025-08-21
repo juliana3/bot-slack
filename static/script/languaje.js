@@ -6,7 +6,7 @@ async function detectarIdioma() {
 
 async function cargarTraducciones() {
     const idioma = await detectarIdioma();
-    const resp = await fetch(`./static/locales/${idioma}2.json`);
+    const resp = await fetch(`./static/locales/${idioma}.json`);
     return await resp.json();
 }
 

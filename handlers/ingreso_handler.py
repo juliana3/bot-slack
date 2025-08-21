@@ -3,8 +3,8 @@ import requests
 from dotenv import load_dotenv
 import logging
 import time
-
-from services.database_config import Session, Ingresante
+from datetime import datetime
+from services.db_operations import Session, Ingresante
 from services.sheets_utils import SHEET, get_col, cargar_sheets
 from services.slack_utils import notificar_rrhh
 from services.payload_utils import payloadALTA
@@ -42,9 +42,9 @@ def procesar_ingreso(datos: dict, session):
 
         # 2. Guardar en la base de datos
         logging.info("Intentando guardar datos en PostgreSQL...")
-        ingresante_id_db = guardar_ingresante(datos, session)
 
-        if not ingresante_id_db:
+        resultado_db = guardar_en_db(datos, session)
+        if resultado_db["status"] != "ok":
             logging.error("Falló la escritura inicial en PostgreSQL.")
             return {
                 "error": "Error al guardar datos en la base de datos principal",
@@ -129,3 +129,52 @@ def procesar_ingreso(datos: dict, session):
         logging.exception(f"Excepción general para ingresante ID BD: {ingresante_id_db}")
         actualizar_estado(ingresante_id_db, "estado_alta", "Error", session)
         return {"error": "Error interno", "status": "failed", "status_code": 500}
+
+
+#cargar los datos a la base de datos Nombre de db: pf_datab, nombre tabla: ingresanes
+def guardar_en_db(datos, session):
+    try:
+        # Convertir fecha si es necesario
+        fecha_nacimiento = datos.get("fecha_nacimiento")
+        if fecha_nacimiento:
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%Y-%m-%d").date()
+        else:
+            fecha_nacimiento = None
+
+        nuevo = Ingresante(
+            nombre=datos.get("nombre"),
+            apellido=datos.get("apellido"),
+            dni=datos.get("dni"),
+            email=datos.get("email"),
+            domicilio=datos.get("domicilio"),
+            localidad=datos.get("localidad"),
+            celular=datos.get("celular"),
+            fecha_nacimiento=fecha_nacimiento,
+            tipo_contrato=datos.get("tipo-contrato"),
+
+            banco=datos.get("banco"),
+            numero_cuenta=datos.get("cuenta"),
+            cbu=datos.get("cbu"),
+            alias=datos.get("alias"),
+            obra_social=datos.get("obra-social"),
+            codigo_afip=datos.get("codigo_afip"),
+
+            bank_name=datos.get("bank_name"),
+            bank_address=datos.get("bank_address"),
+            swift_code=datos.get("swift_code"),
+            account_holder=datos.get("account_holder"),
+            account_number=datos.get("account_number"),
+            routing_number=datos.get("routing_number"),
+            tipo_cuenta=datos.get("tipo-cuenta"),
+            zip=datos.get("zip")
+        )
+
+        session.add(nuevo)
+        session.commit()
+
+        return {"status": "ok"}
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error al guardar en base de datos: {e}")
+        return {"status": "failed", "error": str(e)}

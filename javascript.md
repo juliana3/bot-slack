@@ -24,7 +24,5 @@
       if (apellidoInput) apellidoInput.value = capitalizarCadaPalabra(apellidoInput.value);
       if (domicilioInput) domicilioInput.value = capitalizarCadaPalabra(domicilioInput.value);
       if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
-
-      // Aquí podés seguir con otras validaciones antes de que el formulario se envíe
     });
   }

@@ -1,10 +1,54 @@
+from sqlalchemy import Column, Integer, String, Date
 import logging
-from services.database_config import Session, Ingresante
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+Session = sessionmaker(bind=engine)
+
+Base = declarative_base()
 
 logging.basicConfig(
     level=logging.INFO,
     format = "%(asctime)s [%(levelname)s] %(message)s"
 )
+
+
+class Ingresante(Base):
+    __tablename__ = 'ingresantes'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String)
+    apellido = Column(String)
+    dni = Column(String)
+    email = Column(String)
+    domicilio = Column(String)
+    localidad = Column(String)
+    celular = Column(String)
+    fecha_nacimiento = Column(Date)
+    tipo_contrato = Column(String)
+
+    banco = Column(String)
+    numero_cuenta = Column(String)
+    cbu = Column(String)
+    alias = Column(String)
+    obra_social = Column(String)
+    codigo_afip = Column(String)
+
+    bank_name = Column(String)
+    bank_address = Column(String)
+    swift_code = Column(String)
+    account_holder = Column(String)
+    account_number = Column(String)
+    routing_number = Column(String)
+    tipo_cuenta = Column(String)
+    zip = Column(String)
+
 
 def guardar_ingresante(data_json, session):
     #guarda los datos del ingresante en la bs y retorna el id o None si falla
@@ -85,3 +129,8 @@ def actualizar_estado(ingresante_id, campo, valor, session):
         session.rollback()
         logging.error(f"Error al actualizar el campo '{campo}' para ingresante ID {ingresante_id}")
         return False
+    
+
+
+
+

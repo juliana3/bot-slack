@@ -5,11 +5,10 @@ import os
 import logging 
 
 
-from services.database_config import Session
+from services.db_operations import Session
 from services import sheets_utils
 
 from handlers.ingreso_handler import procesar_ingreso
-from handlers.reproceso_handler import reprocesar_filas
 from handlers.documento_handler import procesar_documento
 
 load_dotenv()

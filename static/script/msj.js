@@ -6,8 +6,26 @@ async function detectarIdioma() {
 
 async function cargarTraducciones() {
     const idioma = await detectarIdioma();
-    const resp = await fetch(`/static/locales/${idioma}.json`);
-    return await resp.json(); // devuelve todo el JSON
+
+    // Diccionario embebido en JS
+    const traducciones = {
+        es: {
+            title: "¡Bienvenido a Crombie",
+            frases: [
+                "BIENVENIDO A CROMBIE! 🎉🥳",
+                "A PARTIR DE AHORA ERES UN CROMBIER! 😎"
+            ]
+        },
+        en: {
+            title: "¡Wlcome to Crombie!",
+            frases: [
+                "WELCOME TO CROMBIE! 🎉🥳",
+                "FROM NOW ON, YOU ARE A CROMBIER! 😎"
+            ]
+        }
+    };
+
+    return traducciones[idioma] || traducciones["en"];
 }
 
 async function iniciarAnimacion() {
