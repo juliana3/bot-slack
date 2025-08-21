@@ -1,4 +1,5 @@
     #punto de entrada
+import threading
 from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
 import os
@@ -6,10 +7,12 @@ import logging
 
 
 from services import sheets_utils
+from services.db_operations import guardar_ingresante
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
 from handlers.documento_handler import procesar_documento
+
 
 load_dotenv()
 
@@ -50,21 +53,25 @@ def agregar_persona():
         return jsonify({"error": "No se recibieron datos JSON"}), 400
     
     try:
-
-        resultado = procesar_ingreso(datos, archivos)
+        #guardar datos en la bbdd
+        ingresante_id_db = guardar_ingresante(datos)
+        if ingresante_id_db is None:
+            logging.error("Falló la escritura inicial en PostgreSQL")
+            return jsonify({"error": "Error al guardar datos en la base de datos principal"}), 500
+        
+        thread_ingreso = threading.Thread(target=procesar_ingreso, args=(datos, archivos, ingresante_id_db))
+        thread_ingreso.start()
 
         return jsonify({
-            "mensaje": "Formulario recibido. Procesando...",
-            "datos": datos,
-            "status": resultado
+            "mensaje": "Formulario recibido y guardado. Procesando en segundo plano."
         }), 200
     except Exception as e:
         logging.error(f"Excepción en /agregar_persona: {str(e)}")
         return jsonify({
-            "mensaje": "Ocurrió un error interno, pero el formulario fue recibido.",
+            "mensaje": "Ocurrió un error interno al guardar los datos.",
             "error": str(e),
             "status": {"status": "failed", "error": str(e)}
-        }), 200
+        }), 500
     finally:
         pass
 

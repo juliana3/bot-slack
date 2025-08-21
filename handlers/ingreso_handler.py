@@ -28,18 +28,20 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos, archivos=None, es_reproceso = False):
+def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso = False):
 
     fila_sheets = None
     id_carpeta_ingresante = None
-    ingresante_id_db = datos.get("id") if es_reproceso else None
 
-    if es_reproceso and ingresante_id_db: # si es reproceso buscar el id de la carpeta
-        id_carpeta_ingresante = obtener_id_carpeta_drive(ingresante_id_db)
+    if not ingresante_id_db:
+        ingresante_id_db = datos.get("id")
 
-        if id_carpeta_ingresante:
+    if ingresante_id_db:
+        ingresante_con_id_carpeta = obtener_id_carpeta_drive(ingresante_id_db)
+        if ingresante_con_id_carpeta:
+            id_carpeta_ingresante = ingresante_con_id_carpeta.get("id_carpeta_drive")
             logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")
-    
+
     #si NO se encontro carpeta, crear una nueva
     if not id_carpeta_ingresante:
         #crear una carpeta para las fotos de dni y el pdf
@@ -80,16 +82,6 @@ def procesar_ingreso(datos, archivos=None, es_reproceso = False):
             logging.error("Falló la escritura en Google Sheets. Continuando sin respaldo")
 
     
-    
-    #Guardar los datos iniciales en la Base de Datos
-    if not ingresante_id_db:
-        logging.info("Intentando guardar datos iniciales en PostgreSQL...")
-        ingresante_id_db = guardar_ingresante(datos)
-
-        if ingresante_id_db is None:
-            logging.error("Falló la escritura inicial en PostgreSQL")
-            return {"error": "Error al guardar datos en la base de datos princcipal", "status": "failed", "status_code": 500}
-
 
     # Armar payload para mandar a People Force
     payload = payloadALTA(datos)
