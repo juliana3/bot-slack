@@ -3,6 +3,7 @@ import requests
 from dotenv import load_dotenv
 import logging
 import time
+from io import BytesIO
 
 from services.db_operations import guardar_ingresante, actualizar_estado, obtener_id_carpeta_drive
 from services.sheets_utils import  cargar_sheets
@@ -57,7 +58,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
         #subir las imagenes a la carpeta
         id_dni_frente = None
         if "dni_frente" in archivos and archivos["dni_frente"].filename:
-            img_f = archivos["dni_frente"]
+            img_f = BytesIO(archivos["dni_frente"])
             id_dni_frente = subir_imagen_a_drive(img_f, "dni_frente.jpg", id_carpeta_ingresante)
             if not id_dni_frente:
                 logging.error("Falló la subida de la imagen del DNI frente a Drive.")
@@ -65,7 +66,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id_db = None, es_reproceso
         
         id_dni_dorso = None
         if "dni_dorso" in archivos and archivos["dni_dorso"].filename:
-            img_d = archivos["dni_dorso"]
+            img_d = BytesIO(archivos["dni_dorso"])
             id_dni_dorso = subir_imagen_a_drive(img_d, "dni_dorso.jpg", id_carpeta_ingresante)
             if not id_dni_dorso:
                 logging.error("Falló la subida de la imagen del DNI dorso a Drive.")

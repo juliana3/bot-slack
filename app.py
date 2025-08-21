@@ -1,5 +1,4 @@
     #punto de entrada
-from io import BytesIO
 import threading
 from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
@@ -56,9 +55,9 @@ def agregar_persona():
     #leer archivos en memoria
     archivos_en_memoria = {}
     if "dni_frente" in archivos and archivos["dni_frente"].filename:
-        archivos_en_memoria["dni_frente"] = BytesIO(archivos["dni_frente"].read())
+        archivos_en_memoria["dni_frente"] = archivos["dni_frente"].read()
     if "dni_dorso" in archivos and archivos["dni_dorso"].filename:
-        archivos_en_memoria["dni_dorso"] = BytesIO(archivos["dni_dorso"].read())
+        archivos_en_memoria["dni_dorso"] = archivos["dni_dorso"].read()
     
     try:
         #guardar datos en la bbdd
