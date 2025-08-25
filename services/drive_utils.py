@@ -21,7 +21,7 @@ def obtener_servicio_drive():
     #devuelve un objeto de servicio para interactuar con drive
     try:
         creds= service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes = SCOPES)
-        service = build("drive", "v3", credentials=creds)
+        service = build("drive", "v3", credentials=creds, cache_discovery=False)
         return service
     except Exception as e:
         logging.error(f"Error al obtener el servicio de GOOGLE DRIVE: {e}", exc_info=True)

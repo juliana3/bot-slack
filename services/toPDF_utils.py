@@ -4,7 +4,7 @@ from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
-from services.drive_utils import descargar_imagen_desde_drive
+from drive_utils import descargar_imagen_desde_drive
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,7 +22,7 @@ def armar_pdf_dni(nombre_persona,id_dni_frente, id_dni_dorso):
         if img_frente is None:
             logging.error(f"armar_pdf_dni: No se pudo descargar la imagen del DNI frente para {nombre_persona}.")
             return None
-        img_frente = Image.open(io.BytesIO(img_frente))
+
 
         logging.info(f"armar_pdf_dni: Descargando imagen de DNI dorso desde Google Drive.")
         # Usar la función de drive_utils para descargar la imagen
@@ -30,14 +30,18 @@ def armar_pdf_dni(nombre_persona,id_dni_frente, id_dni_dorso):
         if img_dorso is None:
             logging.error(f"armar_pdf_dni: No se pudo descargar la imagen del DNI dorso para {nombre_persona}.")
             return None
+        
+        #Crea los objetos de imagen con Pillow
+        img_frente = Image.open(io.BytesIO(img_frente))
         img_dorso = Image.open(io.BytesIO(img_dorso))
+
 
         # Crear el PDF
         buffer = io.BytesIO()
-        p = canvas.Canvas(buffer, pagesize=A4)
+        p = canvas.Canvas(buffer, pagesize=A4, pageCompression=1)
         
         # Ajustar tamaño y posición de las imágenes en el PDF
-        img_width, img_height = 400, 300 
+        img_width, img_height = 400, 250 
         
         # DNI Frente
         p.drawImage(ImageReader(img_frente), 50, A4[1] - 50 - img_height - 10, width=img_width, height=img_height)
@@ -55,3 +59,18 @@ def armar_pdf_dni(nombre_persona,id_dni_frente, id_dni_dorso):
         logging.error(f"armar_pdf_dni: Excepción inesperada al procesar DNI para {nombre_persona}: {e}", exc_info=True)
         return None
 
+
+if __name__ == "__main__":
+    # Nombres e IDs simulados para la prueba
+    nombre_ingresante = "Julia Perez"
+    id_frente_simulado = "1_WXoaacXfbBdzAZ6EmRi4t-p_mqLlQfn"
+    id_dorso_simulado = "1gxwtIQ6LOKGMFTuwiJBVLaGN_S9YntUt"
+
+    # Llamar a la función principal para generar el PDF
+    pdf_bytes = armar_pdf_dni(nombre_ingresante, id_frente_simulado, id_dorso_simulado)
+    if pdf_bytes:
+        with open("DNI_Julia_Perez.pdf", "wb") as f:
+            f.write(pdf_bytes)
+        logging.info("PDF guardado como 'DNI_Juan_Perez.pdf'.")
+    else:
+        logging.error("No se pudo generar el PDF.")
