@@ -60,17 +60,3 @@ def armar_pdf_dni(nombre_persona,id_dni_frente, id_dni_dorso):
         return None
 
 
-if __name__ == "__main__":
-    # Nombres e IDs simulados para la prueba
-    nombre_ingresante = "Julia Perez"
-    id_frente_simulado = "1_WXoaacXfbBdzAZ6EmRi4t-p_mqLlQfn"
-    id_dorso_simulado = "1gxwtIQ6LOKGMFTuwiJBVLaGN_S9YntUt"
-
-    # Llamar a la función principal para generar el PDF
-    pdf_bytes = armar_pdf_dni(nombre_ingresante, id_frente_simulado, id_dorso_simulado)
-    if pdf_bytes:
-        with open("DNI_Julia_Perez.pdf", "wb") as f:
-            f.write(pdf_bytes)
-        logging.info("PDF guardado como 'DNI_Juan_Perez.pdf'.")
-    else:
-        logging.error("No se pudo generar el PDF.")
