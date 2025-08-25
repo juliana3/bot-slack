@@ -4,7 +4,7 @@ from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
-from drive_utils import descargar_imagen_desde_drive
+from services.drive_utils import descargar_imagen_desde_drive
 
 logging.basicConfig(
     level=logging.INFO,
