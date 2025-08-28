@@ -20,7 +20,7 @@ def ejecutar_reproceso():
         else:
             logging.warning(f"Error al reprosesar: %s", response.status_code)
     except Exception as e:
-        logging.error("Error al ejecutar reproceso automatico: %S", e)
+        logging.error("Error al ejecutar reproceso automatico: %s", e)
 
 # Programar el reproceso una vez por dia
 #schedule.every().day.at("08:00").do(ejecutar_reproceso)
