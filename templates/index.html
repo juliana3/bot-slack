@@ -34,15 +34,12 @@
         </p>       
       <!-- 🔹 Sección 1: Datos Personales -->
       <div class="form-section">
-        <label for="pais">Seleccione su país:</label>
+        <label for="pais">Seleccione su país de origen:</label>
         <select id="pais" name="pais" required>
           <option value="">País:</option>
-          <option value="de">Alemania</option>
           <option value="ar">Argentina</option>
-          <option value="au">Australia</option>
           <option value="co">Colombia</option>
           <option value="ec">Ecuador</option>          
-          <option value="es">España</option>
           <option value="us">Estados Unidos</option>
           <option value="gt">Guatemala</option>
           <option value="pe">Perú</option>
@@ -58,31 +55,33 @@
         <label for="dni">DNI:</label>
         <input type="text" id="dni" name="dni" required placeholder="Número de identificación"/>
 
-        <label for="dni-frente">Foto del DNI frente (la posición del rostro debe ser vertical):</label>
+        <label for="dni_frente">Foto del DNI frente (la posición del rostro debe ser vertical):</label>
         <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
 
-        <label for="dni-dorso">Foto del DNI dorso:</label>
+        <label for="dni_dorso">Foto del DNI dorso:</label>
         <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
 
         <label for="email">Email personal:</label>
         <input type="email" id="email" name="email" required />
 
-        <label for="domicilio">Domicilio:</label>
+        
+        <label for="localidad">Localidad real:</label>
+        <input type="text" id="localidad" name="localidad" />
+
+        <label for="domicilio">Domicilio real:</label>
         <input type="text" id="domicilio" name="domicilio" />
 
-        <label for="localidad">Localidad:</label>
-        <input type="text" id="localidad" name="localidad" />
 
         <label for="celular">Celular:</label>
         <input type="tel" id="celular" name="celular" required />
 
-        <label for="fecha-nacimiento">Fecha de Nacimiento:</label>
+        <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
         <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" />
 
       <!-- 🔹 Tipo de contrato -->
       <div class="form-section">
-        <label for="tipo-contrato">Tipo de Contrato:</label>
-        <select id="tipo-contrato" name="tipo_contrato" required>
+        <label for="tipo_contrato">Tipo de Contrato:</label>
+        <select id="tipo_contrato" name="tipo_contrato" required>
           <option value="">Seleccioná una opción</option>
           <option value="rrdd">Relación de Dependencia</option>
           <option value="monotributo">Monotributo</option>
@@ -95,32 +94,32 @@
 
       <!-- 🔹 Sección 2: Datos Bancarios Internacionales -->
       <div class="form-section" id="bancario-internacional" style="display: none">
-        <label for="bank-name">Bank Name:</label>
+        <label for="bank_name">Bank Name:</label>
         <input type="text" id="bank_name" name="bank_name" />
 
-        <label for="bank-address">Bank Address:</label>
+        <label for="bank_address">Bank Address:</label>
         <input type="text" id="bank_address" name="bank_address" />
         <label for="swift-code">Bank SWIFT Code:</label>
         <input type="text" id="swift_code" name="swift_code" />
 
-        <label for="account-holder">Account Holder:</label>
+        <label for="account_holder">Account Holder:</label>
         <input type="text" id="account_holder" name="account_holder" />
 
-        <label for="account-number">Account Number:</label>
+        <label for="account_number">Account Number:</label>
         <input type="text" id="account_number" name="account_number" />
 
-        <label for="routing-number">Routing Number:</label>
+        <label for="routing_number">Routing Number:</label>
         <input type="text" id="routing_number" name="routing_number" />
 
-        <label for="tipo-cuenta">Tipo de cuenta:</label>
-        <select id="tipo-cuenta" name="tipo_cuenta">
+        <label for="tipo_cuenta">Tipo de cuenta:</label>
+        <select id="tipo_cuenta" name="tipo_cuenta">
           <option value="">Seleccioná una opción</option>
           <option value="saving">Saving</option>
           <option value="checking">Checking</option>
         </select>
 
         <label for="zip">ZIP Code (Código Postal):</label>
-        <input type="text" id="zip_code" name="zip" />
+        <input type="text" id="zip" name="zip" />
       </div>
 
       <!-- 🔹 Sección 3: Datos Bancarios Nacionales -->
@@ -128,10 +127,10 @@
         <label for="banco">Banco:</label>
         <input type="text" id="banco" name="banco" />
 
-        <label for="cuenta">Nº Cuenta:</label>
+        <label for="numero_cuenta">Nº Cuenta:</label>
         <input type="text" id="numero_cuenta" name="cuenta" />
 
-        <label for="cuenta">CUIL:</label>
+        <label for="cuil">CUIL:</label>
         <input type="text" id="cuil" name="cuil" />
 
         <label for="cbu" title="CBU debe tener 22 números">CBU:</label>
@@ -140,10 +139,10 @@
         <label for="alias">ALIAS:</label>
         <input type="text" id="alias" name="alias" />
 
-        <label for="obra-social">Nombre de la obra social/prepaga:</label>
+        <label for="obra_social">Nombre de la obra social/prepaga:</label>
         <input type="text" id="obra_social" name="obra_social" />
 
-        <label for="codigo-afip">Código de identificación de la Obra Social en AFIP:</label>
+        <label for="codigo_afip">Código de identificación de la Obra Social en AFIP:</label>
         <input type="text" id="codigo_afip" name="codigo_afip" />
       </div>
       <div class="declaracion-jurada">

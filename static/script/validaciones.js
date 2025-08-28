@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById('miFormulario');
-  const tipoContrato = document.getElementById("tipo-contrato");
+  const tipoContrato = document.getElementById("tipo_contrato");
   const tipoBancoHidden = document.getElementById("tipo_banco");
   const seccionNacional = document.getElementById("bancario-nacional");
   const seccionInternacional = document.getElementById("bancario-internacional");
@@ -128,14 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
       let val = inputDNI.value;
 
       switch (pais) {
-        case 'de': // Alemania
-          val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
-          break;
         case 'ar': // Argentina
           val = val.replace(/\D/g, '').slice(0, 8);
-          break;
-        case 'au': // Australia
-          val = val.replace(/\D/g, '').slice(0, 9);
           break;
         case 'uy': // Uruguay
           val = val.replace(/\D/g, '').slice(0, 8);
@@ -154,9 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
           break;
         case 'do': // República Dominicana
           val = val.replace(/\D/g, '').slice(0, 11);
-          break;
-        case 'es': // España
-          val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
           break;
         case 'us': // Estados Unidos (SSN con guiones opcionales)
           val = val.replace(/[^0-9-]/g, '').slice(0, 11);

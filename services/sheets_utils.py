@@ -44,7 +44,7 @@ FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los va
     "ALIAS": "alias",
     "CUIL": "cuil",
     "Banco": "banco",
-    "Numero de cuenta": "cuenta", 
+    "Numero de cuenta": "numero_cuenta", 
     "Bank name": "bank_name", 
     "Bank address": "bank_address", 
     "Swift code": "swift_code", 

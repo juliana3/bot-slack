@@ -21,7 +21,7 @@ def payloadALTA(datos):
             payload.update({
                 #deposito
                 "banco_2" : datos.get("banco"),
-                "nro_de_cuenta_3" : datos.get("cuenta"),
+                "nro_de_cuenta_3" : datos.get("numero_cuenta"),
                 "alias_3" : datos.get("alias"),
                 "cbu_3": datos.get("cbu"),
                 "cuil_3" : datos.get("cuil"),
@@ -29,7 +29,7 @@ def payloadALTA(datos):
 
                 #transferencia
                 "banco": datos.get("banco"),
-                "nro_de_cuenta_2" : datos.get("cuenta"),
+                "nro_de_cuenta_2" : datos.get("numero_cuenta"),
                 "alias_2": datos.get("alias"),
                 "cbu_2": datos.get("cbu"),
                 "cuil_2" : datos.get("cuil"),
@@ -41,7 +41,7 @@ def payloadALTA(datos):
             payload.update({
                 #transferencia
                 "banco": datos.get("banco"),
-                "nro_de_cuenta_2" : datos.get("cuenta"),
+                "nro_de_cuenta_2" : datos.get("numero_cuenta"),
                 "alias_2": datos.get("alias"),
                 "cbu_2": datos.get("cbu"),
                 "cuil_2" : datos.get("cuil"),
