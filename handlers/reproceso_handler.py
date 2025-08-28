@@ -21,6 +21,9 @@ def reprocesar_filas():
     try:
         # Consultar registros con errores o PDF pendiente en PostgreSQL
         ingresantes_a_reprocesar = obtener_ingresante_por_estado()
+        if ingresantes_a_reprocesar is None:
+            ingresantes_a_reprocesar = []
+            
         logging.info(f"Se encontraron {len(ingresantes_a_reprocesar)} registros para reprocesar")
 
 
