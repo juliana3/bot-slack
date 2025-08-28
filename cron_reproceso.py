@@ -22,8 +22,9 @@ def ejecutar_reproceso():
     except Exception as e:
         logging.error("Error al ejecutar reproceso automatico: %s", e)
 
-# Programar el reproceso una vez por dia
-#schedule.every().day.at("08:00").do(ejecutar_reproceso)
+
+#ejecutar el reproceso cada 6 horas
+#schedule.every(6).hours.do(ejecutar_reproceso)
 
 #para prueba cada 2 minutos
 schedule.every(2).minutes.do(ejecutar_reproceso)
