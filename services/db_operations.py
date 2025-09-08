@@ -51,8 +51,6 @@ def guardar_ingresante(data_json):
                 data_json.get("address", ""),
                 data_json.get("locality", ""),
                 data_json.get("date_of_birth", ""), 
-                data_json.get("tertiary_level", ""),  
-                data_json.get("university_level", ""),
                 data_json.get("health_insurance", ""),      
                 data_json.get("afip_code", ""),      
                 data_json.get("cbu", ""),
