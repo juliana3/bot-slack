@@ -39,7 +39,7 @@ def guardar_ingresante(data_json):
                     type_of_contract, dni_front, dni_back, onboarding_status, id_pf, pdf_status, id_drive_folder
                 ) VALUES (
                     %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) RETURNING id;
             """
             valores = (
