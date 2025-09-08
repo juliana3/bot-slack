@@ -55,10 +55,10 @@ def agregar_persona():
     
     #leer archivos en memoria
     archivos_en_memoria = {}
-    if "dni_frente" in archivos and archivos["dni_frente"].filename:
-        archivos_en_memoria["dni_frente"] = archivos["dni_frente"].read()
-    if "dni_dorso" in archivos and archivos["dni_dorso"].filename:
-        archivos_en_memoria["dni_dorso"] = archivos["dni_dorso"].read()
+    if "dni_front" in archivos and archivos["dni_front"].filename:
+        archivos_en_memoria["dni_front"] = archivos["dni_front"].read()
+    if "dni_back" in archivos and archivos["dni_back"].filename:
+        archivos_en_memoria["dni_back"] = archivos["dni_back"].read()
     
     try:
         #guardar datos en la bbdd

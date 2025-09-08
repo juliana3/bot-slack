@@ -45,39 +45,39 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
     #si NO se encontro carpeta, crear una nueva
     if not id_carpeta_ingresante:
         #crear una carpeta para las fotos de dni y el pdf
-        nombre_carpeta = f"{datos.get('nombre')}-{datos.get('apellido')}"
+        nombre_carpeta = f"{datos.get('first_name')}-{datos.get('last_name')}"
         id_carpeta_ingresante = crear_carpeta(nombre_carpeta)
         logging.info(f"Carpeta creada en Drive con ID: {id_carpeta_ingresante}")
 
     
-    actualizar_columna(ingresante_id_db, "id_carpeta_drive", id_carpeta_ingresante)
+    actualizar_columna(ingresante_id_db, "id_drive_folder", id_carpeta_ingresante)
 
     
     #subir las imagenes si no es reproceso
     if not es_reproceso:
         #subir las imagenes a la carpeta
         id_dni_frente = None
-        if "dni_frente" in archivos:
-            img_f = BytesIO(archivos["dni_frente"])
+        if "dni_front" in archivos:
+            img_f = BytesIO(archivos["dni_front"])
             id_dni_frente = subir_imagen_a_drive(img_f, "dni_frente.jpg", id_carpeta_ingresante)
             if not id_dni_frente:
                 logging.error("Falló la subida de la imagen del DNI frente a Drive.")
                 return {"status": "failed", "message": "Falló la subida del DNI frente a Drive."}
         
         id_dni_dorso = None
-        if "dni_dorso" in archivos:
-            img_d = BytesIO(archivos["dni_dorso"])
+        if "dni_back" in archivos:
+            img_d = BytesIO(archivos["dni_back"])
             id_dni_dorso = subir_imagen_a_drive(img_d, "dni_dorso.jpg", id_carpeta_ingresante)
             if not id_dni_dorso:
                 logging.error("Falló la subida de la imagen del DNI dorso a Drive.")
                 return {"status": "failed", "message": "Falló la subida del DNI dorso a Drive."}
             
-        actualizar_columna(ingresante_id_db, "dni_frente", id_dni_frente)
-        actualizar_columna(ingresante_id_db, "dni_dorso", id_dni_dorso)
+        actualizar_columna(ingresante_id_db, "dni_front", id_dni_frente)
+        actualizar_columna(ingresante_id_db, "dni_back", id_dni_dorso)
 
         #guardar para pasarle al sheets
-        datos["dni_frente"] = id_dni_frente
-        datos["dni_dorso"] = id_dni_dorso
+        datos["dni_front"] = id_dni_frente
+        datos["dni_back"] = id_dni_dorso
 
     #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
     if not es_reproceso:
@@ -102,7 +102,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
         if response.status_code in [200, 201]:
             logging.info(f"Alta OK para ingresante ID DB: {ingresante_id_db} | response: {response.json()}")
             #actualizar estado_alta en la BD
-            actualizar_columna(ingresante_id_db, "estado_alta", "Procesada")
+            actualizar_columna(ingresante_id_db, "onboarding_status", "Procesada")
 
             #Notifica a rrhh por slack
             notificar_rrhh(payload["first_name"], payload["last_name"],payload["personal_email"], "alta")
@@ -117,11 +117,11 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
                 payload_doc = {
                     "document_id_db": ingresante_id_db,
                     "employee_id": employee_id,
-                    "nombre": datos.get("nombre", ""),
-                    "apellido": datos.get("apellido", ""),
+                    "nombre": datos.get("first_name", ""),
+                    "apellido": datos.get("last_name", ""),
                     "email": datos.get("email", ""),
-                    "dni_f": datos.get("dni_frente", ""),
-                    "dni_d": datos.get("dni_dorso", ""),
+                    "dni_f": datos.get("dni_front", ""),
+                    "dni_d": datos.get("dni_back", ""),
                     "id_carpeta_drive" : id_carpeta_ingresante,
                 }
 
@@ -147,14 +147,14 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
             return {"mensaje": "Alta OK pero ID no obtenido", "status": "partial_success"}
         else:
             logging.error(f"Alta ERROR para ingresante ID BD: {ingresante_id_db} | {response.text}")
-            actualizar_columna(ingresante_id_db, "estado_alta", "Error")
+            actualizar_columna(ingresante_id_db, "onboarding_status", "Error")
             return {"error": "API error", "status": "failed"}
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Excepción en solicitud a People Force para ingresante ID DB: {ingresante_id_db} | {str(e)}")
-        actualizar_columna(ingresante_id_db, "estado_alta", "Error")
+        actualizar_columna(ingresante_id_db, "onboarding_status", "Error")
         return {"error": "Conexíon con PeopleForce fallida", "status": "failed", "status_code": 500}
     except Exception as e:
         logging.error(f"Excepción para ingresante ID BD: {ingresante_id_db} | {str(e)}" )
-        actualizar_columna(ingresante_id_db, "estado_alta", "Error")
+        actualizar_columna(ingresante_id_db, "onboarding_status", "Error")
         return {"error": "Error interno", "status": "failed", "status_code": 500}

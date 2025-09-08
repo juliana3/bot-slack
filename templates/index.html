@@ -46,37 +46,37 @@
           <option value="uy">Uruguay</option>
           <option value="do">República Dominicana</option>
         </select>
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required />
+        <label for="first_name">Nombre:</label>
+        <input type="text" id="first_name" name="first_name" required />
 
-        <label for="apellido">Apellido:</label>
-        <input type="text" id="apellido" name="apellido" required />
+        <label for="last_name">Apellido:</label>
+        <input type="text" id="last_name" name="last_name" required />
 
         <label for="dni">DNI:</label>
         <input type="text" id="dni" name="dni" required placeholder="Número de identificación"/>
 
-        <label for="dni_frente">Foto del DNI frente (la posición del rostro debe ser vertical):</label>
-        <input type="file" id="dni_frente" name="dni_frente" accept="image/*" />
+        <label for="dni_front">Foto del DNI frente (la posición del rostro debe ser vertical):</label>
+        <input type="file" id="dni_front" name="dni_front" accept="image/*" />
 
-        <label for="dni_dorso">Foto del DNI dorso:</label>
-        <input type="file" id="dni_dorso" name="dni_dorso" accept="image/*" />
+        <label for="dni_back">Foto del DNI dorso:</label>
+        <input type="file" id="dni_back" name="dni_back" accept="image/*" />
 
         <label for="email">Email personal:</label>
         <input type="email" id="email" name="email" required />
 
         
-        <label for="localidad">Localidad real:</label>
-        <input type="text" id="localidad" name="localidad" />
+        <label for="locality">Localidad real:</label>
+        <input type="text" id="locality" name="locality" />
 
-        <label for="domicilio">Domicilio real:</label>
-        <input type="text" id="domicilio" name="domicilio" />
+        <label for="address">Domicilio real:</label>
+        <input type="text" id="address" name="address" />
 
 
-        <label for="celular">Celular:</label>
-        <input type="tel" id="celular" name="celular" required />
+        <label for="phone_number">Celular:</label>
+        <input type="tel" id="phone_number" name="phone_number" required />
 
-        <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" />
+        <label for="date_of_birth">Fecha de Nacimiento:</label>
+        <input type="date" id="date_of_birth" name="date_of_birth" />
 
       <!-- 🔹 Tipo de contrato -->
       <div class="form-section">
@@ -111,24 +111,24 @@
         <label for="routing_number">Routing Number:</label>
         <input type="text" id="routing_number" name="routing_number" />
 
-        <label for="tipo_cuenta">Tipo de cuenta:</label>
-        <select id="tipo_cuenta" name="tipo_cuenta">
+        <label for="account_type">Tipo de cuenta:</label>
+        <select id="account_type" name="account_type">
           <option value="">Seleccioná una opción</option>
           <option value="saving">Saving</option>
           <option value="checking">Checking</option>
         </select>
 
-        <label for="zip">ZIP Code (Código Postal):</label>
-        <input type="text" id="zip" name="zip" />
+        <label for="zip_code">ZIP Code (Código Postal):</label>
+        <input type="text" id="zip_code" name="zip_code" />
       </div>
 
       <!-- 🔹 Sección 3: Datos Bancarios Nacionales -->
       <div class="form-section" id="bancario-nacional" style="display: none">
-        <label for="banco">Banco:</label>
-        <input type="text" id="banco" name="banco" />
+        <label for="national_bank">Banco:</label>
+        <input type="text" id="national_bank" name="national_bank" />
 
-        <label for="numero_cuenta">Nº Cuenta:</label>
-        <input type="text" id="numero_cuenta" name="cuenta" />
+        <label for="national_account_number">Nº Cuenta:</label>
+        <input type="text" id="national_account_number" name="national_account_number" />
 
         <label for="cuil">CUIL:</label>
         <input type="text" id="cuil" name="cuil" />
@@ -139,11 +139,11 @@
         <label for="alias">ALIAS:</label>
         <input type="text" id="alias" name="alias" />
 
-        <label for="obra_social">Nombre de la obra social/prepaga:</label>
-        <input type="text" id="obra_social" name="obra_social" />
+        <label for="health_insurance">Nombre de la obra social/prepaga:</label>
+        <input type="text" id="health_insurance" name="health_insurance" />
 
-        <label for="codigo_afip">Código de identificación de la Obra Social en AFIP:</label>
-        <input type="text" id="codigo_afip" name="codigo_afip" />
+        <label for="afip_code">Código de identificación de la Obra Social en AFIP:</label>
+        <input type="text" id="afip_code" name="afip_code" />
       </div>
       <div class="declaracion-jurada">
         <input type="checkbox" id="acepto" name="acepto" required/>
@@ -157,9 +157,8 @@
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
 
-  <script src="./static/script/validaciones.js"></script>
-  <script src="./static/script/languaje.js"></script> 
+  <script src="/static/script/validaciones.js"></script>
+  <script src="/static/script/languaje.js"></script> 
 </body>
 </html>
