@@ -34,7 +34,7 @@ def procesar_documento(datos):
 
         if not pdf_dni:
             logging.error(f"No se pudo generar el pdf para {nombre} {apellido}")
-            actualizar_columna(document_id_db, "estado_pdf", "Error")
+            actualizar_columna(document_id_db, "pdf_status", "Error")
             return {"error": "Falló la generación del PDF", "status_code": 500}
         logging.info(f"PDF de {nombre} {apellido} generado correctamente")
 
@@ -50,18 +50,18 @@ def procesar_documento(datos):
             notificar_rrhh(nombre, apellido,email,"documento")
 
             #Actualizar base de datos
-            actualizar_columna(document_id_db,"estado_pdf", "Subido")
+            actualizar_columna(document_id_db,"pdf_status", "Subido")
             return {"mensaje": "Documento subido con éxito", "status_code": 200}
         else:
             logging.error("Falló la subida del PDF de %s a PeopleForce", nombre)
 
             #modificar base de datos
-            actualizar_columna(document_id_db,"estado_pdf", "Error")
+            actualizar_columna(document_id_db,"pdf_status", "Error")
             return {"error": "Falló la subida a PeopleForce", "status_code": 502}
     except Exception as e:
         logging.error(f"procesar_documento: Excepción inesperada al procesar documento para ID BD: {document_id_db}: {str(e)}", exc_info=True)
 
-        actualizar_columna(document_id_db,"estado_pdf", "Error")
+        actualizar_columna(document_id_db,"pdf_status", "Error")
         return {"error": f"Excepción en el procesamiento del documento: {str(e)}", "status_code": 500}
 
 

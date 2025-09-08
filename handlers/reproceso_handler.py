@@ -33,8 +33,8 @@ def reprocesar_filas():
             
             logging.info(f"Procesando registro DB ID: {ingresante_id_db} (DNI: {dni})....")
 
-            estado_alta_db = ingresante.get('estado_alta', '').strip().lower()
-            estado_pdf_db = ingresante.get('estado_pdf', '').strip().lower()
+            estado_alta_db = ingresante.get('onboarding_status', '').strip().lower()
+            estado_pdf_db = ingresante.get('pdf_status', '').strip().lower()
             #reproceso del alta
             if estado_alta_db in ["error", "pendiente", ""]:
                 logging.info(f"Reintentando alta de registro DB ID: {ingresante_id_db} en PeopleForce.")
@@ -59,12 +59,12 @@ def reprocesar_filas():
                 datos_doc = {
                     "document_id_db": ingresante_id_db,
                     "employee_id": ingresante.get('id_pf'),
-                    "nombre": ingresante.get('nombre'),
-                    "apellido": ingresante.get('apellido'),
+                    "nombre": ingresante.get('first_name'),
+                    "apellido": ingresante.get('last_name'),
                     "email": ingresante.get('email'),
-                    "dni_f": ingresante.get('dni_frente'),
-                    "dni_d": ingresante.get('dni_dorso'),
-                    "id_carpeta_drive" : ingresante.get('id_carpeta_drive')
+                    "dni_f": ingresante.get('dni_front'),
+                    "dni_d": ingresante.get('dni_back'),
+                    "id_carpeta_drive" : ingresante.get('id_drive_folder')
                 }
 
                 #procesar documento

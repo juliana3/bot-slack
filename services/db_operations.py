@@ -31,50 +31,50 @@ def guardar_ingresante(data_json):
     try:
         with conn.cursor() as cursor:
             sql = """
-                INSERT INTO ingresantes (
-                    nombre, apellido, dni, email, celular, domicilio, localidad, fecha_nacimiento,
-                    nivel_terciario, nivel_universitario, obra_social, codigo_afip, cbu, alias,
-                    cuil, banco, numero_cuenta, bank_name, bank_address, swift_code, account_holder, 
-                    account_number, routing_number, tipo_cuenta, zip_code,
-                    tipo_contrato, dni_frente, dni_dorso, estado_alta, id_pf, estado_pdf, id_carpeta_drive
+                INSERT INTO new_entrants (
+                    first_name, last_name, dni, email, phone_number, address, locality, date_of_birth,
+                    health_insurance, afip_code, cbu, alias,
+                    cuil, national_bank, national_account_number, bank_name, bank_address, swift_code, account_holder, 
+                    account_number, routing_number, account_type, zip_code,
+                    type_of_contract, dni_front, dni_back, onboarding_status, id_pf, pdf_status, id_drive_folder
                 ) VALUES (
                     %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) RETURNING id;
             """
             valores = (
-                data_json.get("nombre", ""),
-                data_json.get("apellido", ""),
+                data_json.get("first_name", ""),
+                data_json.get("last_name", ""),
                 data_json.get("dni", ""),
                 data_json.get("email", ""),
-                data_json.get("celular", ""),
-                data_json.get("domicilio", ""),
-                data_json.get("localidad", ""),
-                data_json.get("fecha_nacimiento", ""), 
-                data_json.get("nivel-terciario", ""),  
-                data_json.get("nivel-universitario", ""),
-                data_json.get("obra_social", ""),      
-                data_json.get("codigo_afip", ""),      
+                data_json.get("phone_number", ""),
+                data_json.get("address", ""),
+                data_json.get("locality", ""),
+                data_json.get("date_of_birth", ""), 
+                data_json.get("tertiary_level", ""),  
+                data_json.get("university_level", ""),
+                data_json.get("health_insurance", ""),      
+                data_json.get("afip_code", ""),      
                 data_json.get("cbu", ""),
                 data_json.get("alias", ""),
                 data_json.get("cuil", ""),
-                data_json.get("banco", ""),
-                data_json.get("cuenta", ""),  
+                data_json.get("national_bank", ""),
+                data_json.get("national_account_number", ""),  
                 data_json.get("bank_name", ""),     
-                data_json.get("bank_address", ""),  
-                data_json.get("swift_code", ""),     
-                data_json.get("account_holder", ""),  
-                data_json.get("account_number", ""),   
-                data_json.get("routing_number", ""),  
-                data_json.get("tipo_cuenta", ""),      
-                data_json.get("zip", ""),         
-                data_json.get("tipo_contrato", ""),    
-                data_json.get("dni_frente", ""),      
-                data_json.get("dni_dorso", ""),      
-                data_json.get("estado_alta", "Pendiente"),
+                data_json.get("bank_address", ""),
+                data_json.get("swift_code", ""),
+                data_json.get("account_holder", ""),
+                data_json.get("account_number", ""),
+                data_json.get("routing_number", ""),
+                data_json.get("account_type", ""),
+                data_json.get("zip", ""),
+                data_json.get("type_of_contract", ""),
+                data_json.get("dni_front", ""),
+                data_json.get("dni_back", ""),
+                data_json.get("onboarding_status", "Pendiente"),
                 data_json.get("id_pf", ""),
-                data_json.get("estado_pdf", "Pendiente"),
-                data_json.get("id_carpeta_drive", "")
+                data_json.get("pdf_status", "Pendiente"),
+                data_json.get("id_drive_folder", "")
             )
 
             #ejecutar la consulta sql con los valores
@@ -108,13 +108,13 @@ def actualizar_columna(id_ingresante, columna, valor):
         cur = conn.cursor()
         
         # Lista de columnas que se pueden editar para evitar inyección SQL
-        allowed_columns = ['estado_alta', 'id_pf', 'estado_pdf', 'id_carpeta_drive', 'dni_frente', 'dni_dorso']
+        allowed_columns = ['onboarding_status', 'id_pf', 'pdf_status', 'id_drive_folder', 'dni_front', 'dni_back']
         if columna not in allowed_columns:
             logging.error(f"Intento de actualizar una columna no permitida: {columna}")
             return False
 
         # La columna se inserta directamente en el query, pero el valor se usa como parámetro
-        sql = f"UPDATE ingresantes SET {columna} = %s WHERE id = %s"
+        sql = f"UPDATE new_entrants SET {columna} = %s WHERE id = %s"
         cur.execute(sql, (valor, id_ingresante))
         conn.commit()
         logging.info(f"Campo '{columna}' actualizado a '{valor}' para ingresante ID: {id_ingresante}")
@@ -137,7 +137,7 @@ def obtener_ultimo_ingresante():
     
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            sql = "SELECT * FROM ingresantes ORDER BY id DESC LIMIT 1;"
+            sql = "SELECT * FROM new_entrants ORDER BY id DESC LIMIT 1;"
 
             cursor.execute(sql)
             ultimo_ingresante = cursor.fetchone()
@@ -166,7 +166,7 @@ def obtener_ingresante_por_estado():
     
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            sql = "SELECT * FROM ingresantes WHERE estado_alta IN %s OR estado_pdf IN %s;"
+            sql = "SELECT * FROM new_entrants WHERE onboarding_status IN %s OR pdf_status IN %s;"
 
             tupla_estados = tuple(estados)
 
@@ -195,7 +195,7 @@ def obtener_ingresante_por_id(id_ingresante):
     
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            sql = "SELECT * FROM ingresantes WHERE id = %s;"
+            sql = "SELECT * FROM new_entrants WHERE id = %s;"
 
 
             cursor.execute(sql,(id_ingresante,))
@@ -220,7 +220,7 @@ def obtener_id_carpeta_drive(id_ingresante):
     
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            sql = "SELECT id_carpeta_drive FROM ingresantes WHERE id = %s;"
+            sql = "SELECT id_drive_folder FROM new_entrants WHERE id = %s;"
 
 
             cursor.execute(sql,(id_ingresante,))
