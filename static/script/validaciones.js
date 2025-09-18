@@ -1,18 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById('miFormulario');
-  const tipoContrato = document.getElementById("tipo_contrato");
-  const tipoBancoHidden = document.getElementById("tipo_banco");
+  const tipoContrato = document.getElementById("tipo-contrato");
+  const tipoBancoHidden = document.getElementById("tipo-banco");
   const seccionNacional = document.getElementById("bancario-nacional");
   const seccionInternacional = document.getElementById("bancario-internacional");
 
-  const inputCelular = document.getElementById("phone_number");
+  const inputCelular = document.getElementById("celular");
   const inputCBU = document.getElementById("cbu");
-  const paisSelect = document.getElementById("pais");
+
+  const paisSelect = document.getElementById("pais")
   const inputDNI = document.getElementById("dni");
-  const nombreInput = document.getElementById("name");
-  const apellidoInput = document.getElementById("lastname");
-  const domicilioInput = document.getElementById("address"); 
-  const localidadInput = document.getElementById("locality");
+  
+  const nombreInput = document.getElementById("nombre");
+  const apellidoInput = document.getElementById("apellido");
+  const domicilioInput = document.getElementById("domicilio");
+  const localidadInput = document.getElementById("localidad");
+  const inputFecha = document.getElementById("fecha_nacimiento");
 
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
@@ -25,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .join(' ');
   }
 
-  // --- Lógica Celular ---
+  // VALIDACION DE CELULAR
   if (inputCelular) {
     const iti = intlTelInput(inputCelular, {
       initialCountry: "auto",
@@ -51,6 +54,28 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    inputCelular.addEventListener('input', () => {
+      let val = inputCelular.value;
+      const curPos = inputCelular.selectionStart;
+
+      let newVal = iti.options.separateDialCode
+        ? val.replace(/[^0-9]/g, '')
+        : val.replace(/[^0-9+]/g, '');
+
+      if (!iti.options.separateDialCode) {
+        if (newVal.includes('+') && newVal.indexOf('+') !== 0)
+          newVal = newVal.replace(/\+/g, '');
+        if (newVal.length > 1 && newVal.charAt(0) === '+' && newVal.substring(1).includes('+'))
+          newVal = '+' + newVal.substring(1).replace(/\+/g, '');
+      }
+
+      if (val !== newVal) {
+        inputCelular.value = newVal;
+        const newPos = curPos - (val.length - newVal.length);
+        inputCelular.setSelectionRange(newPos, newPos);
+      }
+    });
+
     inputCelular.addEventListener('blur', () => {
       if (iti.isValidNumber()) {
         console.log("Número válido:", iti.getNumber());
@@ -60,12 +85,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica CBU ---
+  // VALIDACIONES PARA CBU
   if (inputCBU) {
+    inputCBU.addEventListener('keydown', (e) => {
+      if (!((e.key >= '0' && e.key <= '9') ||
+            e.key === 'Backspace' || e.key === 'Delete' ||
+            e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+            e.key === 'Tab' ||
+            (e.ctrlKey || e.metaKey) && ['a','c','v','x'].includes(e.key))) {
+        e.preventDefault();
+      }
+    });
+
     inputCBU.addEventListener('input', () => {
-      let nuevo = inputCBU.value.replace(/[^0-9]/g, '');
-      if (nuevo.length > 22) nuevo = nuevo.slice(0, 22);
-      inputCBU.value = nuevo;
+      const curPos = inputCBU.selectionStart;
+      const original = inputCBU.value;
+      let nuevo = original.replace(/[^0-9]/g, '');
+
+      if (nuevo.length > 22) {
+        nuevo = nuevo.slice(0, 22);
+      }
+
+      if (original !== nuevo) {
+        inputCBU.value = nuevo;
+        const newPos = curPos - (original.length - nuevo.length);
+        inputCBU.setSelectionRange(newPos, newPos);
+      }
     });
 
     inputCBU.addEventListener('blur', () => {
@@ -85,19 +130,37 @@ document.addEventListener("DOMContentLoaded", () => {
       let val = inputDNI.value;
 
       switch (pais) {
-        case 'ar': case 'uy': case 'pe':
+        case 'de': // Alemania
+          val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
+          break;
+        case 'ar': // Argentina
           val = val.replace(/\D/g, '').slice(0, 8);
           break;
-        case 'ec': case 'co':
+        case 'au': // Australia
+          val = val.replace(/\D/g, '').slice(0, 9);
+          break;
+        case 'uy': // Uruguay
+          val = val.replace(/\D/g, '').slice(0, 8);
+          break;
+        case 'pe': // Perú
+          val = val.replace(/\D/g, '').slice(0, 8);
+          break;
+        case 'ec': // Ecuador
           val = val.replace(/\D/g, '').slice(0, 10);
           break;
-        case 'gt':
+        case 'co': // Colombia
+          val = val.replace(/\D/g, '').slice(0, 10);
+          break;
+        case 'gt': // Guatemala
           val = val.replace(/\D/g, '').slice(0, 13);
           break;
-        case 'do':
+        case 'do': // República Dominicana
           val = val.replace(/\D/g, '').slice(0, 11);
           break;
-        case 'us':
+        case 'es': // España
+          val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
+          break;
+        case 'us': // Estados Unidos (SSN con guiones opcionales)
           val = val.replace(/[^0-9-]/g, '').slice(0, 11);
           break;
         default:
@@ -107,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica tipo contrato ---
+  // OPCIONES DE CONTRATO
   if (tipoContrato) {
     tipoContrato.addEventListener("change", () => {
       const valor = tipoContrato.value;
@@ -129,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  // Función para setear requeridos dinámicamente
+
   function setRequired(inputs, required) {
     inputs.forEach(input => {
       if (required) {
@@ -139,7 +202,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
 
   if (tipoContrato) {
     tipoContrato.addEventListener("change", () => {
@@ -179,13 +241,68 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function setRequired(inputs, required) {
+    inputs.forEach(input => {
+      if (required) {
+        input.setAttribute("required", "required");
+      } else {
+        input.removeAttribute("required");
+      }
+    });
+  }
 
-  // --- Lógica submit ---
+  if (tipoContrato) {
+    tipoContrato.addEventListener("change", () => {
+      const valor = tipoContrato.value;
+
+      // Seleccionamos todos los inputs de cada sección
+      const inputsInternacional = seccionInternacional.querySelectorAll("input, select");
+      const inputsNacional = seccionNacional.querySelectorAll("input, select");
+
+      if (valor === "contractor") {
+        seccionInternacional.style.display = "block";
+        seccionNacional.style.display = "none";
+        tipoBancoHidden.value = "internacional";
+
+        // Requeridos SOLO internacional
+        setRequired(inputsInternacional, true);
+        setRequired(inputsNacional, false);
+
+      } else if (["rrdd", "monotributo"].includes(valor)) {
+        seccionInternacional.style.display = "none";
+        seccionNacional.style.display = "block";
+        tipoBancoHidden.value = "nacional";
+
+        // Requeridos SOLO nacional
+        setRequired(inputsInternacional, false);
+        setRequired(inputsNacional, true);
+
+      } else {
+        seccionInternacional.style.display = "none";
+        seccionNacional.style.display = "none";
+        tipoBancoHidden.value = "";
+
+        // Ninguno requerido
+        setRequired(inputsInternacional, false);
+        setRequired(inputsNacional, false);
+      }
+    });
+  }
+
+  // VALIDACION FINAL
+
   if (form) {
     form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
+      if(inputFecha && inputFecha.value){
+        let [year, month, day] = inputFecha.value.split("-");
+        let fechaTexto = `${day}-${month}-${year}`;
+        inputFecha.value = fechaTexto;
+      }
+     
+      
+      //Validar el DNI
       if (inputDNI && !inputDNI.checkValidity()) {
+        e.preventDefault();
         alert("Formato de documento no válido para el país seleccionado.");
         return;
       }
@@ -195,24 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (apellidoInput) apellidoInput.value = capitalizarCadaPalabra(apellidoInput.value);
       if (domicilioInput) domicilioInput.value = capitalizarCadaPalabra(domicilioInput.value);
       if (localidadInput) localidadInput.value = capitalizarCadaPalabra(localidadInput.value);
-
-      const formData = new FormData(form);
-      fetch(form.action, {
-        method: 'POST',
-        body: formData
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Error en el servidor");
-        return res.json();
-      })
-      .then(data => {
-        console.log("Respuesta:", data);
-        window.location.href = '/gracias';
-      })
-      .catch(error => {
-        console.error('Error al enviar el formulario:', error);
-        alert("Hubo un error al enviar los datos");
-      });
     });
   }
 });
