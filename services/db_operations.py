@@ -1,5 +1,6 @@
+import datetime
 import psycopg2
-from psycopg2 import extras
+from psycopg2 import execute_values
 import logging
 import os
 from dotenv import load_dotenv
@@ -36,10 +37,10 @@ def guardar_ingresante(data_json):
                     health_insurance, afip_code, cbu, alias,
                     cuil, national_bank, national_account_number, bank_name, bank_address, swift_code, account_holder, 
                     account_number, routing_number, account_type, zip_code,
-                    type_of_contract, dni_front, dni_back, onboarding_status, id_pf, pdf_status, id_drive_folder
+                    type_of_contract, dni_front, dni_back, onboarding_status, id_pf, pdf_status, id_drive_folder, created_at
                 ) VALUES (
                     %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) RETURNING id;
             """
             valores = (
@@ -69,10 +70,11 @@ def guardar_ingresante(data_json):
                 data_json.get("type_of_contract", ""),
                 data_json.get("dni_front", ""),
                 data_json.get("dni_back", ""),
-                data_json.get("onboarding_status", "Pendiente"),
+                data_json.get("onboarding_status", "NoAutorizada"),
                 data_json.get("id_pf", ""),
-                data_json.get("pdf_status", "Pendiente"),
-                data_json.get("id_drive_folder", "")
+                data_json.get("pdf_status", "NoAutorizada"),
+                data_json.get("id_drive_folder", ""),
+                datetime.date.today()                
             )
 
             #ejecutar la consulta sql con los valores
@@ -211,6 +213,35 @@ def obtener_ingresante_por_id(id_ingresante):
         if conn:
             conn.close()
 
+
+
+
+def obtener_id_por_dni(dni_a_buscar):
+    conn = get_db_connection()
+    if conn is None:
+        return None
+    
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            sql = "SELECT id FROM new_entrants WHERE dni = %s;"
+
+
+            cursor.execute(sql, (str(dni_a_buscar),))
+            ID_ingresante = cursor.fetchone()
+
+            if ID_ingresante:
+                logging.info(f"Ingresante con DNI {dni_a_buscar} encontrado")
+                return ID_ingresante[0]
+            else:
+                logging.warning(f"Ingresante DNI {dni_a_buscar} no encontrado")
+    except Exception as e:
+        logging.error(f"Error al obtener el ingresante con DNI {dni_a_buscar}: {str(e)}", exc_info=True)
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+
 def obtener_id_carpeta_drive(id_ingresante):
     conn = get_db_connection()
     if conn is None:
@@ -232,6 +263,44 @@ def obtener_id_carpeta_drive(id_ingresante):
                 return None
     except Exception as e:
         logging.error(f"Error al obtener el ID de la carpeta drive para el ingresante con ID {id_ingresante}: {str(e)}", exc_info=True)
+    finally:
+        if conn:
+            conn.close()
+
+def eliminar_no_autorizados():
+    #elimina registros de la base de datos que tengan status no autorizado
+    conn = get_db_connection()
+    if conn is None:
+        return None
+    
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            una_semana_atras = datetime.date.today() - datetime.timedelta(days=7)
+            #seleccionar registros
+            sql_select = "SELECT id FROM new_entrants WHERE onboarding_status ='NoAutorizada' AND created_at < %s;"
+
+
+            cursor.execute(sql_select,(una_semana_atras,))
+            registros_a_eliminar = cursor.fetchall()
+
+            if not registros_a_eliminar:
+                logging.info("No se encontraron registros a eliminar.")
+                return
+            
+            ids_a_eliminar = [registro[0] for registro in registros_a_eliminar]
+            logging.info(f"Se encontraron {len(ids_a_eliminar)} registros a eliminar")
+
+            #Borrar registros
+            sql_delete = "DELETE FROM new_entrants WHERE id IN %s;"
+
+            execute_values(cursor, sql_delete, [(id,) for id in ids_a_eliminar])
+
+            conn.commit()
+            logging.info("Proceso de eliminación de registros completado exitosamente.")
+
+    except Exception as e:
+        conn.rollback()
+        logging.error(f"Error al eliminar registros: {str(e)}", exc_info=True)
     finally:
         if conn:
             conn.close()

@@ -1,5 +1,4 @@
     #punto de entrada
-import threading
 from io import BytesIO
 from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
@@ -8,11 +7,15 @@ import logging
 
 
 from services import sheets_utils
+from services.sheets_utils import cargar_sheets
+from services.drive_utils import subir_imagen_a_drive
 from services.db_operations import guardar_ingresante
+from services.slack_utils import notificar_rrhh
 
 from handlers.ingreso_handler import procesar_ingreso
 from handlers.reproceso_handler import reprocesar_filas
 from handlers.documento_handler import procesar_documento
+from handlers.autorizados_handler import procesar_autorizados
 
 
 load_dotenv()
@@ -43,6 +46,7 @@ def pagina_agradecimiento():
     return render_template('agradecimiento.html') 
 
 
+NO_AUTORIZADOS_FOLDER_ID = os.getenv("NO_AUTORIZADOS_FOLDER_ID")
 @app.route('/agregar_persona', methods=['POST'])
 def agregar_persona():
 
@@ -61,16 +65,28 @@ def agregar_persona():
         archivos_en_memoria["dni_back"] = archivos["dni_back"].read()
     
     try:
+        #guardar imagenes en carpeta
+        if "dni_front" in archivos_en_memoria:
+            img_f = BytesIO(archivos_en_memoria["dni_front"])
+            id_dni_frente = subir_imagen_a_drive(img_f, "dni_frente.jpg", NO_AUTORIZADOS_FOLDER_ID)
+        if "dni_back" in archivos_en_memoria:
+            img_d = BytesIO(archivos_en_memoria["dni_back"])
+            id_dni_dorso = subir_imagen_a_drive(img_d, "dni_dorso.jpg", NO_AUTORIZADOS_FOLDER_ID)
+
+        datos["dni_front"] = id_dni_frente
+        datos["dni_back"] = id_dni_dorso
+
+        
+
+
         #guardar datos en la bbdd
         ingresante_id_db = guardar_ingresante(datos)
         if ingresante_id_db is None:
             logging.error("Falló la escritura inicial en PostgreSQL")
             return jsonify({"error": "Error al guardar datos en la base de datos principal"}), 500
         
-        #esto hace que el ingreso se procese en segundo plano
-        #para no bloquear la respuesta al usuario
-        thread_ingreso = threading.Thread(target=procesar_ingreso, args=(datos, archivos_en_memoria, ingresante_id_db))
-        thread_ingreso.start()
+        cargar_sheets(datos)
+        notificar_rrhh(datos['first_name'], datos['last_name'], datos['email'], "listo para autorizar")
 
         return jsonify({
             "mensaje": "Formulario recibido y guardado. Procesando en segundo plano."
@@ -86,6 +102,26 @@ def agregar_persona():
         pass
 
 
+@app.route('/autorizados', methods=['POST'])
+def autorizados():
+    #TODO revisar manejo de errores y excepciones
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No se recibieron datos correspondientes al POST de autorizacion"}), 400
+
+        autorizado = data.get("autorizado")
+        dni_autorizado = data.get("dni_autorizado")
+
+        logging.info("llegaron los datos desde el apps script")
+
+        # Llamamos al handler
+        respuesta,status = procesar_autorizados(autorizado, dni_autorizado)
+
+        return jsonify(respuesta), status
+    except Exception as e:
+        logging.error(f"Excepción en /autorizados: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
 
 @app.route('/reprocesar_errores', methods=['POST', 'GET'])

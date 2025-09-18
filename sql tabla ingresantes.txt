@@ -3,7 +3,7 @@
 CREATE TABLE public.new_entrants (
 	id serial4 NOT NULL,
 	first_name varchar(100) NOT NULL,
-	lastname varchar(100) NOT NULL,
+	last_name varchar(100) NOT NULL,
 	dni varchar(20) NOT NULL,
 	email varchar(100) NOT NULL,
 	phone_number varchar(20) NOT NULL,
@@ -28,10 +28,11 @@ CREATE TABLE public.new_entrants (
 	type_of_contract varchar(50) NOT NULL,
 	dni_front text NOT NULL,
 	dni_back text NOT NULL,
-	onboarding_status varchar(50) DEFAULT 'Pendiente'::character varying NULL,
+	onboarding_status varchar(50) DEFAULT 'NoAutorizado'::character varying NULL,
 	id_pf varchar(50) NULL,
-	pdf_status varchar(50) DEFAULT 'Pendiente'::character varying NULL,
+	pdf_status varchar(50) DEFAULT 'NoAutorizado'::character varying NULL,
 	id_drive_folder varchar(50) NULL,
+	created_at DATE NOT NULL
 	CONSTRAINT new_entrants_dni_key UNIQUE (dni),
 	CONSTRAINT new_entrants_email_key UNIQUE (email),
 	CONSTRAINT new_entrants_pkey PRIMARY KEY (id)

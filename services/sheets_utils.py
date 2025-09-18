@@ -29,6 +29,7 @@ def update_col(fila, nombre_columna, valor, sheet = SHEET):
         raise ValueError(f"Columna '{nombre_columna}' no encontrada en la hoja.")
 
 FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los valores los nombres de las variables que vienen del formulario
+    "AUTORIZADO": "FALSO", 
     "Nombre": "first_name",
     "Apellido": "last_name",
     "DNI": "dni",
@@ -54,7 +55,7 @@ FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los va
     "Obra social": "health_insurance", 
     "Codigo AFIP": "afip_code", 
     "DNI frente": "dni_front", 
-    "DNI dorso": "dni_back" 
+    "DNI dorso": "dni_back"
 }
 
 def cargar_sheets(data_json):
@@ -74,14 +75,15 @@ def cargar_sheets(data_json):
     row_to_append = []
 
     for col_name in columnas.keys():
-        # Obtener la clave del formulario que corresponde a esta columna de la hoja.
-        # Si no está en FIELD_MAPPING, asumimos que el nombre de la columna es el mismo que la clave del formulario.
-        form_key = FIELD_MAPPING.get(col_name, col_name)
-        
-        # Obtener el valor del JSON del formulario usando la clave mapeada.
-        value = data_json.get(form_key, "")
-        
-        row_to_append.append(value)
+        if col_name == "Creado el":
+            row_to_append.append(str(datetime.date.today()))
+        else:
+
+            # Obtener el valor del JSON del formulario usando la clave mapeada.
+            form_key = FIELD_MAPPING.get(col_name, col_name)
+            value = data_json.get(form_key, "")
+            
+            row_to_append.append(value)
 
     try:
         result = SHEET.append_row(row_to_append, value_input_option='USER_ENTERED', insert_data_option='INSERT_ROWS')
@@ -95,3 +97,58 @@ def cargar_sheets(data_json):
 
     
     
+def eliminar_filas_no_autorizadas():
+    
+    #Elimina filas de la hoja de cálculo que no han sido autorizadas después de 7 días.
+    if SHEET is None:
+        logging.error("No se puede eliminar filas de la hoja: la conexión falló.")
+        return False
+    
+    try:
+        # Obtener los encabezados para encontrar los índices de las columnas
+        columnas = get_col(SHEET)
+        col_autorizado = columnas.get("AUTORIZADO")
+        col_creado_el = columnas.get("Creado el")
+        
+        if not col_autorizado or not col_creado_el:
+            logging.error("No se encontraron las columnas 'AUTORIZADO' o 'Creado el'.")
+            return False
+
+        # Obtener todos los datos de la hoja
+        all_rows = SHEET.get_all_values()
+        filas_a_borrar = []
+        fecha_limite = datetime.date.today() - datetime.timedelta(days=7)
+
+        # Iterar a partir de la segunda fila (la primera es el encabezado)
+        for i, fila in enumerate(all_rows[1:], 2): 
+            try:
+                autorizado = fila[col_autorizado - 1]
+                fecha_str = fila[col_creado_el - 1]
+                
+                # Convertir la fecha de la fila a un objeto de fecha
+                fecha_creacion = datetime.datetime.strptime(fecha_str, '%Y-%m-%d').date()
+
+                # Verificar si cumple las condiciones para ser eliminada
+                if autorizado.upper() == "FALSO" and fecha_creacion < fecha_limite:
+                    filas_a_borrar.append(i)
+            except (ValueError, IndexError) as e:
+                # Capturar errores si los datos de la fila no son válidos
+                logging.warning(f"Se omitió la fila {i} por error en los datos: {e}")
+                continue
+
+        if not filas_a_borrar:
+            logging.info("No se encontraron filas no autorizadas y antiguas para eliminar.")
+            return True
+
+        # Eliminar las filas de forma masiva para ser más eficiente
+        # Es necesario eliminar en orden inverso para no alterar los índices de las filas
+        for fila_num in sorted(filas_a_borrar, reverse=True):
+            SHEET.delete_row(fila_num)
+            logging.info(f"Fila {fila_num} eliminada de Google Sheets.")
+
+        logging.info(f"Proceso de eliminación de filas finalizado. Se eliminaron {len(filas_a_borrar)} filas.")
+        return True
+
+    except Exception as e:
+        logging.error(f"Error general al eliminar filas de Google Sheets: {str(e)}", exc_info=True)
+        return False

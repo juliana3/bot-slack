@@ -14,7 +14,9 @@ def notificar_rrhh(nombre, apellido,email, tipo):
         mensaje = f"Alta exitosa para *{nombre} {apellido}* (`{email}`) en PeopleForce."
     elif tipo == "documento":
         mensaje = f"Documento cargado para: *{nombre} {apellido}* (`{email}`) en PeopleForce."
-    
+    elif tipo == "listo para autorizar": 
+         mensaje = f"*{nombre} {apellido}* ya completó el formulario. Está listo para ser autorizado -> https://docs.google.com/spreadsheets/d/1gIZLzI81tjM34ENZbv63SfKw2VJxCHLtH4RZBeIyyhk/edit?gid=0#gid=0"
+
 
     headers = {
         "Authorization": f"Bearer {SLACK_BOT_TOKEN}",

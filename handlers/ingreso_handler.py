@@ -9,7 +9,7 @@ from services.db_operations import  actualizar_columna, obtener_id_carpeta_drive
 from services.sheets_utils import  cargar_sheets
 from services.slack_utils import notificar_rrhh
 from services.payload_utils import payloadALTA
-from services.drive_utils import crear_carpeta, subir_imagen_a_drive
+from services.drive_utils import crear_carpeta, mover_archivo
 
 
 from handlers.documento_handler import procesar_documento
@@ -29,12 +29,10 @@ logging.basicConfig(
 )
 
 
-def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = False):
+def procesar_ingreso(datos,  es_reproceso = False):
 
-    fila_sheets = None
     id_carpeta_ingresante = None
-    ingresante_id_db = datos.get("id") if es_reproceso else ingresante_id
-
+    ingresante_id_db = datos.get("id")
     #si es reproceso o si ya se gguardo en la bbdd se busca el id DE LA CARPETA
     if es_reproceso and ingresante_id_db: # si es reproceso buscar el id de la carpeta
         id_carpeta_ingresante = obtener_id_carpeta_drive(ingresante_id_db)
@@ -52,44 +50,14 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
     
     actualizar_columna(ingresante_id_db, "id_drive_folder", id_carpeta_ingresante)
 
-    
-    #subir las imagenes si no es reproceso
-    if not es_reproceso:
-        #subir las imagenes a la carpeta
-        id_dni_frente = None
-        if "dni_front" in archivos:
-            img_f = BytesIO(archivos["dni_front"])
-            id_dni_frente = subir_imagen_a_drive(img_f, "dni_frente.jpg", id_carpeta_ingresante)
-            if not id_dni_frente:
-                logging.error("Falló la subida de la imagen del DNI frente a Drive.")
-                return {"status": "failed", "message": "Falló la subida del DNI frente a Drive."}
-        
-        id_dni_dorso = None
-        if "dni_back" in archivos:
-            img_d = BytesIO(archivos["dni_back"])
-            id_dni_dorso = subir_imagen_a_drive(img_d, "dni_dorso.jpg", id_carpeta_ingresante)
-            if not id_dni_dorso:
-                logging.error("Falló la subida de la imagen del DNI dorso a Drive.")
-                return {"status": "failed", "message": "Falló la subida del DNI dorso a Drive."}
-            
-        actualizar_columna(ingresante_id_db, "dni_front", id_dni_frente)
-        actualizar_columna(ingresante_id_db, "dni_back", id_dni_dorso)
+    #cambiamos las fotos del dni de carpeta "no autorizados" a su carpeta personal
+    mover_archivo(datos.get('dni_front'), id_carpeta_ingresante)
+    mover_archivo(datos.get('dni_back'), id_carpeta_ingresante)
 
-        #guardar para pasarle al sheets
-        datos["dni_front"] = id_dni_frente
-        datos["dni_back"] = id_dni_dorso
-
-    #Guardar los datos iniciales en Sheets como respaldo solo si no es reproceso
-    if not es_reproceso:
-        logging.info("Intentando añadir datos a Google Sheets..")
-        fila_sheets = cargar_sheets(datos)
-
-        if fila_sheets is None:
-            logging.error("Falló la escritura en Google Sheets. Continuando sin respaldo")
 
     
 
-    # Armar payload para mandar a People Force
+    # Armar payload para mandar a People Forc
     payload = payloadALTA(datos)
 
     headers = {
@@ -109,7 +77,7 @@ def procesar_ingreso(datos, archivos=None, ingresante_id = None, es_reproceso = 
 
 
             #capturar el ID de la persona creada
-            employee_id = response.json().get("id") #verificar con que clave devuelve PF el json
+            employee_id = response.json().get("id") 
             if employee_id:
                 actualizar_columna(ingresante_id_db, "id_pf", employee_id)
 

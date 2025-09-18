@@ -1,4 +1,7 @@
 import logging
+import os
+
+from dotenv import load_dotenv
 
 
 
@@ -8,6 +11,8 @@ from services.slack_utils import notificar_rrhh
 from services.db_operations import actualizar_columna
 from services.drive_utils import subir_pdf_a_drive
 
+load_dotenv()
+NO_AUTORIZADOS_FOLDER_ID = os.getenv("NO_AUTORIZADOS_FOLDER_ID")
 
 
 def procesar_documento(datos):
@@ -28,6 +33,7 @@ def procesar_documento(datos):
     id_carpeta_drive = datos.get("id_carpeta_drive")
     
     try:
+
         logging.info(f"procesar_documento: Intentando armar PDF para {nombre} {apellido}")
         # Armar el PDF
         pdf_dni = armar_pdf_dni(nombre, dni_f, dni_d)

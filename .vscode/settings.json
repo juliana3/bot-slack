@@ -10,5 +10,10 @@
             "database": "ingresantes_db",
             "name": "prueba_conexion"
         }
-    ]
+    ],
+    "python.testing.pytestArgs": [
+        "templates"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
