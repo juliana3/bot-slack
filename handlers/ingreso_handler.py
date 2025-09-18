@@ -35,7 +35,8 @@ def procesar_ingreso(datos,  es_reproceso = False):
     ingresante_id_db = datos.get("id")
     #si es reproceso o si ya se gguardo en la bbdd se busca el id DE LA CARPETA
     if es_reproceso and ingresante_id_db: # si es reproceso buscar el id de la carpeta
-        id_carpeta_ingresante = obtener_id_carpeta_drive(ingresante_id_db)
+        carpeta_ingresante_dict = obtener_id_carpeta_drive(ingresante_id_db) #esto devuelve un dict
+        id_carpeta_ingresante = carpeta_ingresante_dict['id_drive_folder']
 
         if id_carpeta_ingresante:
             logging.info(f"Se encontró carpeta existente en BD: {id_carpeta_ingresante}")

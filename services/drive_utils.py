@@ -19,8 +19,8 @@ load_dotenv()
 SERVICE_ACCOUNT_FILE = "chatbot-people-466623-1ec1f3039c87.json"
 SCOPES = ['https://www.googleapis.com/auth/drive']
 UNIDAD_COMPARTIDA_DRIVE = os.getenv("DRIVE_ID")
-DNI_FOLDER_ID = os.getenv("DNI_DNI_FOLDER_ID") #esta es la carpeta DNIs
-NO_AUTORIZADOS_DNI_FOLDER_ID = os.getenv("NO_AUTORIZADOS_DNI_FOLDER_ID")
+DNI_FOLDER_ID = os.getenv("DNI_FOLDER_ID") #esta es la carpeta DNIs
+NO_AUTORIZADOS_FOLDER_ID = os.getenv("NO_AUTORIZADOS_FOLDER_ID")
 
 
 def obtener_servicio_drive():
@@ -170,8 +170,16 @@ def mover_archivo(file_id, carpeta_destino_id):
         return False
 
     try:
+        file = servicio_drive.files().get(
+            fileId=file_id,
+            fields="parents",
+            supportsAllDrives=True
+        ).execute()
+        padres_actuales = file.get("parents", [])
+        logging.info(f"Archivo {file_id} actualmente en carpetas: {padres_actuales}")
+
         #asumimos que la carpete de origen es No Autorizados
-        carpeta_origen_id = os.getenv("NO_AUTORIZADOS_DNI_FOLDER_ID")
+        carpeta_origen_id = os.getenv("NO_AUTORIZADOS_FOLDER_ID")
 
         servicio_drive.files().update(
             fileId=file_id,
@@ -194,7 +202,7 @@ def eliminar_archivos():
         return False
     
     try:
-        carpeta_no_autorizados_id = os.getenv("NO_AUTORIZADOS_DNI_FOLDER_ID")
+        carpeta_no_autorizados_id = os.getenv("NO_AUTORIZADOS_FOLDER_ID")
 
         #busca archivos en la carpeta
         query = f"'{carpeta_no_autorizados_id}' in parents and trashed=false"

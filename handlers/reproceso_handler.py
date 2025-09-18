@@ -40,7 +40,7 @@ def reprocesar_filas():
                 logging.info(f"Reintentando alta de registro DB ID: {ingresante_id_db} en PeopleForce.")
 
                 try:
-                    resultado_alta = procesar_ingreso(ingresante, archivos ={}, es_reproceso=True)
+                    resultado_alta = procesar_ingreso(ingresante, es_reproceso=True)
 
                     if resultado_alta.get("status") == "success":
                         f_procesadas +=1

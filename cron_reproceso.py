@@ -46,8 +46,8 @@ def ejecutar_limpieza_drive():
 #PLANIFICACION DE LAS TAREAS
 
 """reproceso"""
-schedule.every(6).hours.do(ejecutar_reproceso)
-#schedule.every(5).minutes.do(ejecutar_reproceso)
+#schedule.every(6).hours.do(ejecutar_reproceso)
+schedule.every(5).minutes.do(ejecutar_reproceso)
 
 """Limpiezas"""
 schedule.every().sunday.at("02:00").do(ejecutar_limpieza_db)
