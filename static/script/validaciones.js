@@ -11,9 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputDNI = document.getElementById("dni");
   const nombreInput = document.getElementById("name");
   const apellidoInput = document.getElementById("lastname");
-  const domicilioInput = document.getElementById("address");
+  const domicilioInput = document.getElementById("address"); 
   const localidadInput = document.getElementById("locality");
-  const inputFecha = document.getElementById("date_of_birth");
 
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
@@ -128,6 +127,58 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+
+  // Función para setear requeridos dinámicamente
+  function setRequired(inputs, required) {
+    inputs.forEach(input => {
+      if (required) {
+        input.setAttribute("required", "required");
+      } else {
+        input.removeAttribute("required");
+      }
+    });
+  }
+
+
+  if (tipoContrato) {
+    tipoContrato.addEventListener("change", () => {
+      const valor = tipoContrato.value;
+
+      // Seleccionamos todos los inputs de cada sección
+      const inputsInternacional = seccionInternacional.querySelectorAll("input, select");
+      const inputsNacional = seccionNacional.querySelectorAll("input, select");
+
+      if (valor === "contractor") {
+        seccionInternacional.style.display = "block";
+        seccionNacional.style.display = "none";
+        tipoBancoHidden.value = "internacional";
+
+        // Requeridos SOLO internacional
+        setRequired(inputsInternacional, true);
+        setRequired(inputsNacional, false);
+
+      } else if (["rrdd", "monotributo"].includes(valor)) {
+        seccionInternacional.style.display = "none";
+        seccionNacional.style.display = "block";
+        tipoBancoHidden.value = "nacional";
+
+        // Requeridos SOLO nacional
+        setRequired(inputsInternacional, false);
+        setRequired(inputsNacional, true);
+
+      } else {
+        seccionInternacional.style.display = "none";
+        seccionNacional.style.display = "none";
+        tipoBancoHidden.value = "";
+
+        // Ninguno requerido
+        setRequired(inputsInternacional, false);
+        setRequired(inputsNacional, false);
+      }
+    });
+  }
+
 
   // --- Lógica submit ---
   if (form) {
