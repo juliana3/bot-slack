@@ -1,0 +1,11 @@
+services:
+  bot-slack:
+    build: .
+    container_name: bot-slack
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
