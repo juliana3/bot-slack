@@ -1,6 +1,50 @@
+
+# Variables de entorno
 .env
+.env.*
+*.env
+.env.local
+.env.prod
+.env.dev
+
+# Credenciales de Google
+*.json
+!manifiesto_app_slack.json
+
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
 
-chatbot-people-466623-1ec1f3039c87.json
+# Base de datos
+*.db
+*.sqlite
+db/
 
-manifiesto_app_slack.json
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+
+# Backups
+*.bak
+*.backup

@@ -1,3 +1,4 @@
+import os
 import schedule
 import time
 import requests
@@ -12,7 +13,9 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
-REPROCESO_URL = "http://localhost:4000/reprocesar_errores"
+
+REPROCESO_URL = os.getenv("REPROCESO_URL", "http://localhost:4000/reprocesar_errores")
+
 
 def ejecutar_reproceso():
     #llama al endpoint de nuestra api
@@ -46,8 +49,8 @@ def ejecutar_limpieza_drive():
 #PLANIFICACION DE LAS TAREAS
 
 """reproceso"""
-#schedule.every(6).hours.do(ejecutar_reproceso)
-schedule.every(5).minutes.do(ejecutar_reproceso)
+schedule.every(6).hours.do(ejecutar_reproceso)
+#schedule.every(5).minutes.do(ejecutar_reproceso)
 
 """Limpiezas"""
 schedule.every().sunday.at("02:00").do(ejecutar_limpieza_db)

@@ -1,0 +1,28 @@
+# ========================================
+# CONFIGURACIÓN PARA PRODUCCIÓN - CROMBIE
+# ========================================
+
+# Base de datos PostgreSQL
+DATABASE_URL=postgresql://myuser:mypassword@db:5432/postgres
+
+# Slack
+SLACK_TOKEN=xoxb-tu-token-aqui
+SLACK_CHANNEL_ID=tu-channel-id
+SIGNING_SECRET=tu-signing-secret
+
+# PeopleForce
+PEOPLEFORCE_URL=https://app.peopleforce.io/api/public/v3/employees 
+PEOPLEFORCE_TOKEN=tu-token-peopleforce
+DOCUMENT_FOLDER_ID_PF=tu-folder-id-peopleforce
+
+# Google Drive
+DRIVE_ID=tu-drive-id
+DNI_FOLDER_ID=tu-folder-id-dni
+NO_AUTORIZADOS_FOLDER_ID=tu-folder-id-no-autorizados
+
+# Google Credentials
+CREDS_GOOGLE=tus-credenciales-google.json
+ID_SPREADSHEET=tu-spreadsheet-id
+
+# Cron (URL interna de Docker)
+REPROCESO_URL=http://web:4000/reprocesar_errores

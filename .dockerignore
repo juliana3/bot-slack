@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.venv
+venv/
+env/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Archivos de entorno (se pasan por docker-compose)
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Base de datos local
+*.db
+*.sqlite
+
+# Otros
+.DS_Store
+README.md
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Archivos de configuración/documentación que no se usan en runtime
+manifiesto_app_slack.json
