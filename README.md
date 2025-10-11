@@ -58,32 +58,8 @@ Automatización del proceso de onboarding de nuevos empleados con integración a
 
 2. **Configurar variables de entorno:**
 
-   Edita el archivo `.env` con tus credenciales:
+   Edita el archivo `.env` con tus credenciales siguiendo el archivo `env_example`
 
-   ```bash
-   # Base de datos
-   DATABASE_URL=postgresql://myuser:mypassword@db:5432/postgres
-   
-   # Slack
-   SLACK_TOKEN=xoxb-tu-token
-   SLACK_CHANNEL_ID=C0931DFE125  # CAMBIAR: Este es un canal de prueba, usar el canal de producción
-   SIGNING_SECRET=tu-signing-secret
-   
-   # PeopleForce
-   PEOPLEFORCE_URL=https://api.peopleforce.io/api/public/v3/employees
-   PEOPLEFORCE_TOKEN=tu-token
-   DOCUMENT_FOLDER_ID_PF=12302  # NO CAMBIAR: Específico para Crombie
-   
-   # Google Drive
-   DRIVE_ID=tu-drive-id
-   DNI_FOLDER_ID=tu-folder-id
-   CREDS_GOOGLE=chatbot-people-466623-1ec1f3039c87.json
-   ID_SPREADSHEET=tu-spreadsheet-id
-   NO_AUTORIZADOS_FOLDER_ID=tu-folder-id
-   
-   # Cron
-   REPROCESO_URL=http://web:4000/reprocesar_errores
-   ```
 
 3. **Colocar archivo de credenciales de Google:**
 
@@ -164,7 +140,7 @@ Configura el Apps Script en tu Google Sheet para habilitar el flujo de autorizac
 
 1. Abre tu Google Sheet
 2. Ve a **Extensiones** → **Apps Script**
-4. **IMPORTANTE:** Actualiza la URL en el script para que apunte a tu servidor de producción:
+3. **IMPORTANTE:** Actualiza la URL en el script para que apunte a tu servidor de producción:
 
    ```javascript
    // Para desarrollo con ngrok:
@@ -218,6 +194,7 @@ bot-people/
 ├── .gitignore              # Archivo de ignorados de Git
 ├── Dockerfile              # Configuración de imagen Docker
 ├── docker-compose.yml      # Orquestación de servicios Docker
+├── env_example             # Orquestación de servicios Docker
 ├── init.sql                # Schema de inicialización de BD
 ├── README.md               # Este archivo
 ├── app.py                  # Aplicación principal Flask
@@ -234,10 +211,12 @@ bot-people/
 ├── services/               # Integración de servicios externos
 │   ├── db_operations.py
 │   ├── drive_utils.py
+│   ├── helpers.utils.py
 │   ├── payload_utils.py
-│   ├── pdf_utils.py
+│   ├── pf_utils.py
 │   ├── sheets_utils.py
-│   └── slack_utils.py
+│   ├── slack_utils.py
+│   └── toPDF_utils.py
 ├── static/                 # Archivos estáticos (CSS, JS, imágenes)
 │   ├── img/
 │   ├── locales/
@@ -339,5 +318,6 @@ netstat -ano | findstr :4000
 5. Abre un Pull Request
 
 ## Licencia
+
 
 Este proyecto es código abierto y está disponible bajo la [Licencia MIT](LICENSE).
