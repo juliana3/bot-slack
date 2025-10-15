@@ -29,7 +29,7 @@ def update_col(fila, nombre_columna, valor, sheet = SHEET):
         raise ValueError(f"Columna '{nombre_columna}' no encontrada en la hoja.")
 
 FIELD_MAPPING = { #las claves son los nombres de las columnas en sheets y los valores los nombres de las variables que vienen del formulario
-    "AUTORIZADO": "FALSE", 
+    #"AUTORIZADO": "FALSE", 
     "Nombre": "first_name",
     "Apellido": "last_name",
     "DNI": "dni",

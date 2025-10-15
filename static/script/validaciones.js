@@ -15,6 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const localidadInput = document.getElementById("locality");
   const inputFecha = document.getElementById("date_of_birth");
 
+  // --- Elementos del Botón de Carga (SPINNER) ---
+  const submitButton = document.getElementById('submitButton');
+  const buttonText = document.getElementById('buttonText');
+  const spinner = submitButton ? submitButton.querySelector('.loading-spinner') : null;
+
+  // Función auxiliar para manejar el estado de carga del botón
+  function setLoading(isLoading) {
+    if (submitButton) submitButton.disabled = isLoading;
+    // Mostrar texto o spinner
+    if (buttonText) buttonText.style.display = isLoading ? 'none' : 'inline';
+    if (spinner) spinner.style.display = isLoading ? 'inline-block' : 'none';
+  }
+
   // Capitalizar cada palabra
   function capitalizarCadaPalabra(texto) {
     return texto
@@ -188,6 +201,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // 1. Activar el spinner y deshabilitar el botón
+      setLoading(true);
+
       // Capitalizar campos
       if (nombreInput) nombreInput.value = capitalizarCadaPalabra(nombreInput.value);
       if (apellidoInput) apellidoInput.value = capitalizarCadaPalabra(apellidoInput.value);
@@ -209,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(error => {
         console.error('Error al enviar el formulario:', error);
+        setLoading(false);
         alert("Hubo un error al enviar los datos");
       });
     });

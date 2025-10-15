@@ -137,6 +137,37 @@ button:hover {
   background-color: #005ecb;
 }
 
+/* --- ESTILOS AGREGADOS PARA EL SPINNER DE CARGA --- */
+
+/* Estilos para el botón cuando está en estado de carga (Deshabilitado) */
+button:disabled {
+    cursor: not-allowed; 
+    opacity: 0.8; 
+    background-color: #005ecb; /* Mantener un color consistente mientras carga */
+}
+
+/* Estilos básicos para el spinner (el elemento que se oculta/muestra) */
+.loading-spinner {
+    display: inline-block;
+    width: 1.2em; /* Un poco más grande para mejor visibilidad */
+    height: 1.2em; 
+    /* Eliminar margin-right para que quede centrado si solo está el spinner */
+    border: 3px solid rgba(255, 255, 255, 0.3); /* Color del borde (parte transparente) */
+    border-radius: 50%;
+    border-top-color: #ffffff; /* Color de la parte que se verá girando */
+    animation: spin 1s linear infinite;
+    vertical-align: middle; 
+}
+
+/* Definición de la animación de giro */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- FIN ESTILOS SPINNER --- */
+
+
 .mensaje-agradecimiento {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);

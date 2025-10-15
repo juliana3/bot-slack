@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # Servicio de PostgreSQL (nueva BD para producción)
@@ -14,7 +14,7 @@ services:
       - "5432:5432"  # Puerto diferente para no conflictuar con la BD de dev
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
-      - ./sql_tabla_ingresantes.txt:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U myuser -d postgres"]
       interval: 10s
@@ -50,7 +50,7 @@ services:
       ID_SPREADSHEET: ${ID_SPREADSHEET}
       NO_AUTORIZADOS_FOLDER_ID: ${NO_AUTORIZADOS_FOLDER_ID}
     env_file:
-      - .env.prod
+      - .env
     volumes:
       # Sin volumen de código en producción (usa el código de la imagen)
       # Credenciales de Google
@@ -87,7 +87,7 @@ services:
       ID_SPREADSHEET: ${ID_SPREADSHEET}
       NO_AUTORIZADOS_FOLDER_ID: ${NO_AUTORIZADOS_FOLDER_ID}
     env_file:
-      - .env.prod
+      - .env
     volumes:
       # Credenciales de Google
       - ./chatbot-people-466623-1ec1f3039c87.json:/app/chatbot-people-466623-1ec1f3039c87.json:ro
